@@ -1,0 +1,24 @@
+{
+  "name": "formact",
+  "version": "1.0.0",
+  "description": "A react form with context",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diogoperillo/formact.git"
+  },
+  "keywords": [
+    "react",
+    "form",
+    "input"
+  ],
+  "author": "Diogo Perillo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/diogoperillo/formact/issues"
+  },
+  "homepage": "https://github.com/diogoperillo/formact#readme"
+}
