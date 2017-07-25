@@ -6,9 +6,6 @@ const {
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 
-const resolve = require('./resolve')
-const defineGlobals = require('./defineGlobals')
-
 module.exports = {
   entry: {
     app: './src/index.js',
@@ -35,11 +32,10 @@ module.exports = {
     nodeExternals()
   ],
   target: 'node',
-  resolve,
   plugins: [
     new DefinePlugin(Object.assign(
       {},
-      defineGlobals, {
+      {
       '__dirname': JSON.stringify(__dirname),
       'window': 'undefined',
     }))
