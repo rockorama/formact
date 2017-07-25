@@ -2,10 +2,7 @@
   "name": "formact",
   "version": "1.0.0",
   "description": "A react form with context",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "test"
-  },
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/diogoperillo/formact.git"
@@ -20,5 +17,102 @@
   "bugs": {
     "url": "https://github.com/diogoperillo/formact/issues"
   },
-  "homepage": "https://github.com/diogoperillo/formact#readme"
+  "homepage": "https://github.com/diogoperillo/formact#readme",
+  "babel": {
+    "presets": [
+      [
+        "latest",
+        {
+          "es2015": {
+            "modules": false
+          }
+        }
+      ],
+      "stage-1",
+      "react"
+    ],
+    "plugins": [
+    ],
+    "env": {
+      "development": {
+        "plugins": [
+          "react-hot-loader/babel"
+        ]
+      }
+    }
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": [
+      "standard",
+      "standard-react",
+      "plugin:flowtype/recommended"
+    ],
+    "plugins": [
+      "flowtype"
+    ],
+    "rules": {
+      "no-debugger": "off",
+      "no-console": "off",
+      "comma-dangle": [
+        1,
+        "always-multiline"
+      ],
+      "max-len": [
+        1,
+        120,
+        2
+      ]
+    },
+    "globals": {
+      "__DEV__": true
+    }
+  },
+  "scripts": {
+    "build": "NODE_ENV=production webpack --progress --config ./tools/webpack.server.config",
+    "flow": "flow",
+    "test": "eslint src && yarn run flow && yarn run build"
+  },
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-relay-plugin": "^0.11.0",
+    "prop-types": "^15.5.6",
+    "react": "^15.5.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-core": "^6.23.1",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-latest": "^6.22.0",
+    "babel-preset-react": "^6.23.0",
+    "babel-preset-react-optimize": "^1.0.1",
+    "babel-preset-stage-1": "^6.22.0",
+    "empty": "^0.10.1",
+    "eslint": "^3.15.0",
+    "eslint-config-standard": "^10.2.0",
+    "eslint-config-standard-jsx": "^4.0.1",
+    "eslint-config-standard-react": "^4.2.0",
+    "eslint-loader": "^1.6.1",
+    "eslint-plugin-flowtype": "^2.30.4",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-promise": "^3.4.1",
+    "eslint-plugin-react": "^6.9.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "execa": "^0.7.0",
+    "express": "^4.14.1",
+    "extract-text-webpack-plugin": "2.1.0",
+    "file-loader": "^0.11.0",
+    "flow-bin": "^0.43.1",
+    "fs-promise": "^2.0.0",
+    "graphql-fetch-schema": "^0.4.0",
+    "react-hot-loader": "3.0.0-beta.6",
+    "serve": "^5.1.0",
+    "url-loader": "^0.5.7",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0",
+    "webpack-node-externals": "^1.5.4"
+  }
 }
