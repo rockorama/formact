@@ -95,7 +95,6 @@ export default class FormactMe extends Component {
   }
 
   onChange = (value: string) => {
-
     this.setState({
       value,
     }, this.propagateValue)
@@ -131,7 +130,7 @@ export default class FormactMe extends Component {
 
   render () {
     const { children, component, render, ...other } = this.props
-    const props = { value: this.state.value, onChange: this.onChange, ...other }
+    const props = { ...other, value: this.state.value, onChange: this.onChange }
 
     return (
       component ? (
