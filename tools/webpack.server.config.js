@@ -8,7 +8,7 @@ const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   entry: {
-    app: './src/index.js',
+    app: './index.js',
   },
   output: {
     filename: 'index.js',

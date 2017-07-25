@@ -31,8 +31,7 @@
       "stage-1",
       "react"
     ],
-    "plugins": [
-    ],
+    "plugins": [],
     "env": {
       "development": {
         "plugins": [
@@ -78,7 +77,8 @@
     "babel-polyfill": "^6.23.0",
     "babel-relay-plugin": "^0.11.0",
     "prop-types": "^15.5.6",
-    "react": "^15.5.3"
+    "react": "^15.5.3",
+    "react-component-base": "^0.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
