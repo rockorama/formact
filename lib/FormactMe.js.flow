@@ -109,7 +109,7 @@ export default class FormactMe extends Component {
   }
 
   validate = (proposedValue: any) => {
-    const value = proposedValue || this.state.value
+    const value = proposedValue || (this.state && this.state.value)
     let {validation, required} = this.props
     let errorMessage = ''
 
