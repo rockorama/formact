@@ -57,5 +57,8 @@
   },
   "jest": {
     "collectCoverage": true
+  },
+  "dependencies": {
+    "hoist-non-react-statics": "^2.2.1"
   }
 }

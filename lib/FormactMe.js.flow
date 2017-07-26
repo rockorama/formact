@@ -3,18 +3,19 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { REQUIRED } from './validation'
+import { REQUIRED, EMAIL } from './validation'
 
 type Props = {
   name: string,
   required?: boolean,
-  value?: any,
+  fieldValue?: any,
   defaultValue?: any,
   onChange?: () => {},
   validation?: () => {} | Array<() => {}>,
   component?: any,
   render?: () => {},
   children?: any,
+  type?: string,
 }
 
 export default class FormactMe extends Component {
@@ -28,7 +29,7 @@ export default class FormactMe extends Component {
   }
 
   state: {
-    value: any,
+    fieldValue: any,
     errorMessage: string,
     dirty: boolean,
   }
@@ -36,29 +37,29 @@ export default class FormactMe extends Component {
   constructor(props: Props, context: any) {
     super(props, context)
 
-    const value =
-      props.value
+    const fieldValue =
+      props.fieldValue
       || props.defaultValue
       || null
 
     this.state = {
-      value,
-      errorMessage: this.validate(value),
+      fieldValue,
+      errorMessage: this.validate(fieldValue),
       dirty: false,
     }
   }
 
   componentDidMount () {
     if (this.context && this.context.addField) {
-      const {value} = this.state
+      const {fieldValue} = this.state
       this.context.addField({
         name: this.props.name,
-        value,
+        fieldValue,
         validate: this.validate,
       })
 
-      if (value) {
-        this.propagateValue(value)
+      if (fieldValue) {
+        this.propagateValue(fieldValue)
       }
     }
   }
@@ -70,47 +71,49 @@ export default class FormactMe extends Component {
   }
 
   componentWillReceiveProps (nextProps: Props) {
-    let {value} = this.state
+    let {fieldValue} = this.state
 
-    if ('value' in nextProps) {
-      value = nextProps.value
+    if ('fieldValue' in nextProps) {
+      fieldValue = nextProps.fieldValue
     }
 
     if (this.context && this.props.name !== nextProps.name) {
       this.context.removeField(this.props.name)
       this.context.addField({
         name: nextProps.name,
-        value,
+        fieldValue,
         validate: this.validate,
       })
     }
 
-    if (value !== this.state.value) {
-      this.propagateValue(value)
+    if (fieldValue !== this.state.fieldValue) {
+      this.propagateValue(fieldValue)
     }
   }
 
-  propagateValue = (value: any) => {
+  propagateValue = (fieldValue: any) => {
+    this.setState({
+      fieldValue,
+      errorMessage: this.validate(fieldValue),
+    }, this.setValueChanged)
+  }
+
+  setValueChanged = () => {
     if (this.context && this.context.valueChanged) {
-      this.context.valueChanged(this.props.name, value)
-      this.setState({
-        value,
-        errorMessage: this.validate(value),
-      })
+      this.context.valueChanged(this.props.name, this.state.fieldValue)
     }
   }
 
-  onChange = (value: any) => {
-    this.propagateValue(value)
+  onChange = (fieldValue: any) => {
+    this.propagateValue(fieldValue)
 
     if (this.props.onChange) {
-      this.props.onChange(value)
+      this.props.onChange(fieldValue)
     }
   }
 
-  validate = (proposedValue: any) => {
-    const value = proposedValue || (this.state && this.state.value)
-    let {validation, required} = this.props
+  validate = (fieldValue: any) => {
+    let {validation, required, type} = this.props
     let errorMessage = ''
 
     if (!validation) {
@@ -126,8 +129,15 @@ export default class FormactMe extends Component {
       ]
     }
 
+    if (type === 'email') {
+      validation = [
+        EMAIL,
+        ...validation,
+      ]
+    }
+
     errorMessage = validation.map(
-      fun => fun(value, this.props.name)
+      fun => fun(fieldValue, this.props.name)
     ).filter(m => m).join(' ')
 
     return errorMessage
