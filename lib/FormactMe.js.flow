@@ -7,11 +7,11 @@ import { REQUIRED } from './validation'
 
 type Props = {
   name: string,
-  required: boolean,
-  value: string,
-  defaultValue: string,
-  onChange: () => {},
-  validation: () => {} | Array<() => {}>,
+  required?: boolean,
+  value?: any,
+  defaultValue?: any,
+  onChange?: () => {},
+  validation?: () => {} | Array<() => {}>,
   component?: any,
   render?: () => {},
   children?: any,
@@ -28,7 +28,9 @@ export default class FormactMe extends Component {
   }
 
   state: {
-    value: string,
+    value: any,
+    errorMessage: string,
+    dirty: boolean,
   }
 
   constructor(props: Props, context: any) {
@@ -37,10 +39,12 @@ export default class FormactMe extends Component {
     const value =
       props.value
       || props.defaultValue
-      || ''
+      || null
 
     this.state = {
       value,
+      errorMessage: this.validate(value),
+      dirty: false,
     }
   }
 
@@ -53,8 +57,8 @@ export default class FormactMe extends Component {
         validate: this.validate,
       })
 
-      if (this.state.value) {
-        this.propagateValue()
+      if (value) {
+        this.propagateValue(value)
       }
     }
   }
@@ -82,29 +86,30 @@ export default class FormactMe extends Component {
     }
 
     if (value !== this.state.value) {
+      this.propagateValue(value)
+    }
+  }
+
+  propagateValue = (value: any) => {
+    if (this.context && this.context.valueChanged) {
+      this.context.valueChanged(this.props.name, value)
       this.setState({
         value,
-      }, this.propagateValue)
+        errorMessage: this.validate(value),
+      })
     }
   }
 
-  propagateValue = () => {
-    if (this.context && this.context.valueChanged) {
-      this.context.valueChanged(this.props.name, this.state.value)
-    }
-  }
-
-  onChange = (value: string) => {
-    this.setState({
-      value,
-    }, this.propagateValue)
+  onChange = (value: any) => {
+    this.propagateValue(value)
 
     if (this.props.onChange) {
-      this.props.onChange(e)
+      this.props.onChange(value)
     }
   }
 
-  validate = () => {
+  validate = (proposedValue: any) => {
+    const value = proposedValue || this.state.value
     let {validation, required} = this.props
     let errorMessage = ''
 
@@ -122,15 +127,27 @@ export default class FormactMe extends Component {
     }
 
     errorMessage = validation.map(
-      fun => fun(this.state.value, this.props.name)
+      fun => fun(value, this.props.name)
     ).filter(m => m).join(' ')
 
     return errorMessage
   }
 
+  setDirty = () => {
+    this.setState({
+      dirty: true,
+    })
+  }
+
   render () {
     const { children, component, render, ...other } = this.props
-    const props = { ...other, value: this.state.value, onChange: this.onChange }
+    const props = {
+      ...other,
+      onChange: this.onChange,
+      setDirty: this.setDirty,
+      submitted: this.context.submitted(),
+      ...this.state,
+    }
 
     return (
       component ? (
