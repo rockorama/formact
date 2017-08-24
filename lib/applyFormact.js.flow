@@ -4,10 +4,12 @@ import PropTypes from 'prop-types'
 import hoistStatics from 'hoist-non-react-statics'
 import FormactMe from './FormactMe'
 
+import type { Component } from 'react'
+
 /**
  * A public higher-order component to apply formact context
  */
-const applyFormact = (Component: any) => {
+const applyFormact = (Component: Component) => {
   const C = (props: Object) => {
     const { wrappedComponentRef, ...remainingProps } = props
 

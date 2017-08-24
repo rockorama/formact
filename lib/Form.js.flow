@@ -3,11 +3,20 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import type {
+  ElementChildren,
+  FieldName,
+  FieldValue,
+  FormChangePayload,
+  FormSubmitPayload,
+  FormAddFieldPayload,
+} from './types'
+
 export default class Form extends Component {
   props: {
-    onSubmit: () => {},
-    onChange?: () => {},
-    children?: any,
+    onSubmit: (e: SyntheticEvent, payload: FormSubmitPayload) => void,
+    onChange?: (payload: FormChangePayload) => void,
+    children: ElementChildren,
   }
 
   static childContextTypes = {
@@ -41,7 +50,7 @@ export default class Form extends Component {
     return this.state.submitted
   }
 
-  triggerOnChange = (name: string) => {
+  triggerOnChange = (name: FieldName) => {
     const { onChange } = this.props
 
     if (onChange) {
@@ -54,7 +63,7 @@ export default class Form extends Component {
     }
   }
 
-  valueChanged = (name: string, value: string) => {
+  valueChanged = (name: FieldName, value: FieldValue) => {
     if (name) {
       this.fields[name] = value
 
@@ -63,15 +72,7 @@ export default class Form extends Component {
     }
   }
 
-  addField = ({
-    name,
-    value,
-    validate,
-  }: {
-    name: string,
-    value: string,
-    validate: () => {},
-  }) => {
+  addField = ({ name, value, validate }: FormAddFieldPayload) => {
     this.fields[name] = value
     this.validators[name] = {
       validate,
@@ -80,7 +81,7 @@ export default class Form extends Component {
     this.triggerOnChange(name)
   }
 
-  removeField = (name: string) => {
+  removeField = (name: FieldName) => {
     const newFields = {}
     const newErrors = {}
     Object.keys(this.fields).forEach(field => {
@@ -102,7 +103,7 @@ export default class Form extends Component {
     })
   }
 
-  validateField = (field: string) => {
+  validateField = (field: FieldName) => {
     const { validate } = this.validators[field]
     if (!validate || typeof validate !== `function`) {
       return ''

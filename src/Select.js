@@ -3,16 +3,18 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import type { FieldName, FieldValidateFunction } from './types'
+
 import { REQUIRED } from './validation'
 
 type Props = {
-  name: string,
-  required: boolean,
-  value: string,
-  defaultValue: string,
-  onChange: () => {},
+  name: FieldName,
+  required?: boolean,
+  value?: string,
+  defaultValue?: string,
+  onChange?: (e: SyntheticEvent) => void,
   options: Array<string | Object>,
-  validation: () => {} | Array<() => {}>,
+  validation?: FieldValidateFunction | Array<FieldValidateFunction>,
 }
 
 export default class Select extends Component {

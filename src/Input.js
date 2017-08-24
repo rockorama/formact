@@ -5,16 +5,18 @@ import PropTypes from 'prop-types'
 
 import { REQUIRED, EMAIL } from './validation'
 
+import type { FieldName, FieldValidateFunction } from './types'
+
 type Props = {
-  name: string,
-  label: string,
-  required: boolean,
-  multiline: boolean,
+  name: FieldName,
+  label?: string,
+  required?: boolean,
+  multiline?: boolean,
   type: string,
-  value: string,
-  defaultValue: string,
-  onChange: () => {},
-  validation: () => {} | Array<() => {}>,
+  value?: string,
+  defaultValue?: string,
+  onChange?: (e: SyntheticEvent) => void,
+  validation?: FieldValidateFunction | Array<FieldValidateFunction>,
 }
 
 export default class Input extends Component {

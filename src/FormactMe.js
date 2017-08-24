@@ -5,16 +5,23 @@ import PropTypes from 'prop-types'
 
 import { REQUIRED, EMAIL } from './validation'
 
+import type {
+  FieldName,
+  FieldValue,
+  FieldValidateFunction,
+  ElementChildren,
+} from './types'
+
 type Props = {
-  name: string,
+  name: FieldName,
   required?: boolean,
-  fieldValue?: any,
-  defaultValue?: any,
-  onChange?: () => {},
-  validation?: () => {} | Array<() => {}>,
-  component?: any,
-  render?: () => {},
-  children?: any,
+  fieldValue?: FieldValue,
+  defaultValue?: FieldValue,
+  onChange?: (value: FieldValue) => void,
+  validation?: FieldValidateFunction | Array<FieldValidateFunction>,
+  component?: Component,
+  render?: (props: Object) => void,
+  children?: ElementChildren,
   type?: string,
 }
 
@@ -29,7 +36,7 @@ export default class FormactMe extends Component {
   }
 
   state: {
-    fieldValue: any,
+    fieldValue: FieldValue,
     errorMessage: string,
     dirty: boolean,
   }
@@ -88,7 +95,7 @@ export default class FormactMe extends Component {
     }
   }
 
-  propagateValue = (fieldValue: any) => {
+  propagateValue = (fieldValue: FieldValue) => {
     this.setState(
       {
         fieldValue,
@@ -104,7 +111,7 @@ export default class FormactMe extends Component {
     }
   }
 
-  onChange = (fieldValue: any) => {
+  onChange = (fieldValue: FieldValue) => {
     this.propagateValue(fieldValue)
 
     if (this.props.onChange) {
@@ -112,7 +119,7 @@ export default class FormactMe extends Component {
     }
   }
 
-  validate = (fieldValue: any) => {
+  validate = (fieldValue: FieldValue) => {
     let { validation, required, type } = this.props
     let errorMessage = ''
 
