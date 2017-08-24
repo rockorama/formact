@@ -37,10 +37,7 @@ export default class FormactMe extends Component {
   constructor(props: Props, context: any) {
     super(props, context)
 
-    const fieldValue =
-      props.fieldValue
-      || props.defaultValue
-      || null
+    const fieldValue = props.fieldValue || props.defaultValue || null
 
     this.state = {
       fieldValue,
@@ -49,9 +46,9 @@ export default class FormactMe extends Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.context && this.context.addField) {
-      const {fieldValue} = this.state
+      const { fieldValue } = this.state
       this.context.addField({
         name: this.props.name,
         fieldValue,
@@ -64,14 +61,14 @@ export default class FormactMe extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.context && this.context.removeField) {
       this.context.removeField(this.props.name)
     }
   }
 
-  componentWillReceiveProps (nextProps: Props) {
-    let {fieldValue} = this.state
+  componentWillReceiveProps(nextProps: Props) {
+    let { fieldValue } = this.state
 
     if ('fieldValue' in nextProps) {
       fieldValue = nextProps.fieldValue
@@ -92,10 +89,13 @@ export default class FormactMe extends Component {
   }
 
   propagateValue = (fieldValue: any) => {
-    this.setState({
-      fieldValue,
-      errorMessage: this.validate(fieldValue),
-    }, this.setValueChanged)
+    this.setState(
+      {
+        fieldValue,
+        errorMessage: this.validate(fieldValue),
+      },
+      this.setValueChanged,
+    )
   }
 
   setValueChanged = () => {
@@ -113,7 +113,7 @@ export default class FormactMe extends Component {
   }
 
   validate = (fieldValue: any) => {
-    let {validation, required, type} = this.props
+    let { validation, required, type } = this.props
     let errorMessage = ''
 
     if (!validation) {
@@ -123,22 +123,17 @@ export default class FormactMe extends Component {
     }
 
     if (required) {
-      validation = [
-        REQUIRED,
-        ...validation,
-      ]
+      validation = [REQUIRED, ...validation]
     }
 
     if (type === 'email') {
-      validation = [
-        EMAIL,
-        ...validation,
-      ]
+      validation = [EMAIL, ...validation]
     }
 
-    errorMessage = validation.map(
-      fun => fun(fieldValue, this.props.name)
-    ).filter(m => m).join(' ')
+    errorMessage = validation
+      .map(fun => fun(fieldValue, this.props.name))
+      .filter(m => m)
+      .join(' ')
 
     return errorMessage
   }
@@ -149,7 +144,7 @@ export default class FormactMe extends Component {
     })
   }
 
-  render () {
+  render() {
     const { children, component, render, ...other } = this.props
     const props = {
       ...other,
@@ -159,20 +154,14 @@ export default class FormactMe extends Component {
       ...this.state,
     }
 
-    return (
-      component ? (
-        React.createElement(component, props) : null
-       ) : render ? (
-         render(props)
-       ) : children ? (
-         typeof children === 'function' ? (
-          children(props)
-        ) : !isEmptyChildren(children) ? (
-          React.Children.only(children)
-        ) : (
-          null
-        )
-       ) : null
-     )
+    return component
+      ? (React.createElement(component, props): null)
+      : render
+        ? render(props)
+        : children
+          ? typeof children === 'function'
+            ? children(props)
+            : !isEmptyChildren(children) ? React.Children.only(children) : null
+          : null
   }
 }

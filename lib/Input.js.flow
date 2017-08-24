@@ -3,10 +3,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import {
-  REQUIRED,
-  EMAIL,
-} from './validation'
+import { REQUIRED, EMAIL } from './validation'
 
 type Props = {
   name: string,
@@ -38,7 +35,7 @@ export default class Input extends Component {
     value: string,
   }
 
-  constructor (props: Props, context: any) {
+  constructor(props: Props, context: any) {
     super(props, context)
 
     this.state = {
@@ -46,9 +43,9 @@ export default class Input extends Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.context && this.context.addField) {
-      const {value} = this.state
+      const { value } = this.state
       this.context.addField({
         name: this.props.name,
         value,
@@ -61,14 +58,14 @@ export default class Input extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.context && this.context.removeField) {
       this.context.removeField(this.props.name)
     }
   }
 
-  componentWillReceiveProps (nextProps: Props) {
-    let {value} = this.state
+  componentWillReceiveProps(nextProps: Props) {
+    let { value } = this.state
 
     if ('value' in nextProps) {
       value = nextProps.value
@@ -84,9 +81,12 @@ export default class Input extends Component {
     }
 
     if (value !== this.state.value) {
-      this.setState({
-        value,
-      }, this.propagateValue)
+      this.setState(
+        {
+          value,
+        },
+        this.propagateValue,
+      )
     }
   }
 
@@ -97,11 +97,14 @@ export default class Input extends Component {
   }
 
   onChange = (e: SyntheticEvent) => {
-    const {value} = (e.currentTarget: window.HTMLInputElement)
+    const { value } = (e.currentTarget: window.HTMLInputElement)
 
-    this.setState({
-      value,
-    }, this.propagateValue)
+    this.setState(
+      {
+        value,
+      },
+      this.propagateValue,
+    )
 
     if (this.props.onChange) {
       this.props.onChange(e)
@@ -109,7 +112,7 @@ export default class Input extends Component {
   }
 
   validate = () => {
-    let {validation, required} = this.props
+    let { validation, required } = this.props
 
     if (!validation) {
       validation = []
@@ -118,25 +121,20 @@ export default class Input extends Component {
     }
 
     if (required) {
-      validation = [
-        REQUIRED,
-        ...validation,
-      ]
+      validation = [REQUIRED, ...validation]
     }
 
     if (this.props.type === 'email') {
-      validation = [
-        EMAIL,
-        ...validation,
-      ]
+      validation = [EMAIL, ...validation]
     }
 
-    return validation.map(
-      fun => fun(this.state.value, this.props.label)
-    ).filter(m => m).join(' ')
+    return validation
+      .map(fun => fun(this.state.value, this.props.label))
+      .filter(m => m)
+      .join(' ')
   }
 
-  render () {
+  render() {
     const { validation, multiline, ...remainingProps } = this.props
     if (multiline) {
       return (

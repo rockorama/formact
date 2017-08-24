@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import {REQUIRED} from './validation'
+import { REQUIRED } from './validation'
 
 type Props = {
   name: string,
@@ -29,21 +29,18 @@ export default class Select extends Component {
     value: string,
   }
 
-  constructor (props: Props, context: any) {
+  constructor(props: Props, context: any) {
     super(props, context)
 
     const value =
-      props.value ||
-      props.defaultValue ||
-      this.getFirstValue(props) ||
-      ''
+      props.value || props.defaultValue || this.getFirstValue(props) || ''
 
     this.state = {
       value,
     }
   }
 
-  getFirstValue (props: Props) {
+  getFirstValue(props: Props) {
     if (props.options.length) {
       if (typeof props.options[0] === 'string') {
         return props.options[0]
@@ -53,9 +50,9 @@ export default class Select extends Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.context && this.context.addField) {
-      const {value} = this.state
+      const { value } = this.state
       this.context.addField({
         name: this.props.name,
         value,
@@ -68,14 +65,14 @@ export default class Select extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.context && this.context.removeField) {
       this.context.removeField(this.props.name)
     }
   }
 
-  componentWillReceiveProps (nextProps: Props) {
-    let {value} = this.state
+  componentWillReceiveProps(nextProps: Props) {
+    let { value } = this.state
 
     if ('value' in nextProps) {
       value = nextProps.value
@@ -91,9 +88,12 @@ export default class Select extends Component {
     }
 
     if (value !== this.state.value) {
-      this.setState({
-        value,
-      }, this.propagateValue)
+      this.setState(
+        {
+          value,
+        },
+        this.propagateValue,
+      )
     }
   }
 
@@ -104,11 +104,14 @@ export default class Select extends Component {
   }
 
   onChange = (e: SyntheticEvent) => {
-    const {value} = (e.currentTarget: window.HTMLInputElement)
+    const { value } = (e.currentTarget: window.HTMLInputElement)
 
-    this.setState({
-      value,
-    }, this.propagateValue)
+    this.setState(
+      {
+        value,
+      },
+      this.propagateValue,
+    )
 
     if (this.props.onChange) {
       this.props.onChange(e)
@@ -116,7 +119,7 @@ export default class Select extends Component {
   }
 
   validate = () => {
-    let {validation, required} = this.props
+    let { validation, required } = this.props
     let errorMessage = ''
 
     if (!validation) {
@@ -126,36 +129,32 @@ export default class Select extends Component {
     }
 
     if (required) {
-      validation = [
-        REQUIRED,
-        ...validation,
-      ]
+      validation = [REQUIRED, ...validation]
     }
 
-    errorMessage = validation.map(
-      fun => fun(this.state.value, this.props.name)
-    ).filter(m => m).join(' ')
+    errorMessage = validation
+      .map(fun => fun(this.state.value, this.props.name))
+      .filter(m => m)
+      .join(' ')
 
     return errorMessage
   }
 
-  renderOption (item: string | Object) {
+  renderOption(item: string | Object) {
     if (typeof item === 'string') {
-      return <option key={`option-${item}`}>{item}</option>
+      return (
+        <option key={`option-${item}`}>
+          {item}
+        </option>
+      )
     }
-    return (
-      <option {...item} key={`option-${item.toString()}`} />
-    )
+    return <option {...item} key={`option-${item.toString()}`} />
   }
 
-  render () {
-    const {options, ...other} = this.props
+  render() {
+    const { options, ...other } = this.props
     return (
-      <select
-        {...other}
-        value={this.state.value}
-        onChange={this.onChange}
-      >
+      <select {...other} value={this.state.value} onChange={this.onChange}>
         {options.map(item => this.renderOption(item))}
       </select>
     )

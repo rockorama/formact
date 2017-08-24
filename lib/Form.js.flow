@@ -28,7 +28,7 @@ export default class Form extends Component {
   validators = {}
   submitted = false
 
-  getChildContext () {
+  getChildContext() {
     return {
       addField: this.addField,
       removeField: this.removeField,
@@ -63,7 +63,15 @@ export default class Form extends Component {
     }
   }
 
-  addField = ({name, value, validate}: { name: string, value: string, validate: () => {} }) => {
+  addField = ({
+    name,
+    value,
+    validate,
+  }: {
+    name: string,
+    value: string,
+    validate: () => {},
+  }) => {
     this.fields[name] = value
     this.validators[name] = {
       validate,
@@ -94,8 +102,8 @@ export default class Form extends Component {
     })
   }
 
-  validateField = (field: string)  => {
-    const {validate} = this.validators[field]
+  validateField = (field: string) => {
+    const { validate } = this.validators[field]
     if (!validate || typeof validate !== `function`) {
       return ''
     }
@@ -117,16 +125,20 @@ export default class Form extends Component {
     }
 
     if (this.props.onSubmit) {
-      this.props.onSubmit(e, {valid, fields: this.fields, errors: this.errors})
+      this.props.onSubmit(e, {
+        valid,
+        fields: this.fields,
+        errors: this.errors,
+      })
     }
   }
 
-  onChange (e: SyntheticEvent) {
+  onChange(e: SyntheticEvent) {
     e.preventDefault()
   }
 
-  render () {
-    let {children, ...others} = this.props
+  render() {
+    let { children, ...others } = this.props
     return (
       <form {...others} onChange={this.onChange} onSubmit={this.onSubmit}>
         {children}

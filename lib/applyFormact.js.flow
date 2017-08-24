@@ -9,20 +9,25 @@ import FormactMe from './FormactMe'
  */
 const applyFormact = (Component: any) => {
   const C = (props: Object) => {
-
     const { wrappedComponentRef, ...remainingProps } = props
 
     return (
-      <FormactMe {...props} render={routeComponentProps => (
-        <Component {...remainingProps} {...routeComponentProps} ref={wrappedComponentRef}/>
-      )}/>
+      <FormactMe
+        {...props}
+        render={routeComponentProps =>
+          <Component
+            {...remainingProps}
+            {...routeComponentProps}
+            ref={wrappedComponentRef}
+          />}
+      />
     )
   }
 
   C.displayName = `applyFormact(${Component.displayName || Component.name})`
   C.WrappedComponent = Component
   C.propTypes = {
-    wrappedComponentRef: PropTypes.func
+    wrappedComponentRef: PropTypes.func,
   }
 
   return hoistStatics(C, Component)
