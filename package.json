@@ -1,6 +1,6 @@
 {
   "name": "formact",
-  "version": "0.1.0",
+  "version": "0.10.0",
   "description": "A React Form Set of Components",
   "main": "lib/index.js",
   "scripts": {
@@ -20,17 +20,13 @@
     "type": "git",
     "url": "git+https://github.com/diogoperillo/formact.git"
   },
-  "keywords": [
-    "react",
-    "form",
-    "input"
-  ],
+  "keywords": ["react", "form", "input"],
   "author": "Diogo Perillo <diogo@perillo.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PaulLeCam/formact/issues"
+    "url": "https://github.com/diogoperillo/formact/issues"
   },
-  "homepage": "https://github.com/PaulLeCam/formact#readme",
+  "homepage": "https://github.com/diogoperillo/formact#readme",
   "peerDependencies": {
     "react": "^15.0.0"
   },
