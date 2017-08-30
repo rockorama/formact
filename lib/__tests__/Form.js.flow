@@ -13,6 +13,6 @@ describe('Form', () => {
       </Form>,
     )
 
-    console.log(wrapper.props)
+    console.log(wrapper)
   })
 })
