@@ -1,28 +1,22 @@
 // @flow
 
-import React, { Component } from 'react'
+import React, { Children, Component } from 'react'
 import PropTypes from 'prop-types'
 
 import { REQUIRED, EMAIL } from './validation'
 
-import type {
-  FieldName,
-  FieldValue,
-  FieldValidateFunction,
-  ElementChildren,
-} from './types'
+import type { FieldName, FieldValue, FieldValidateFunction } from './types'
 
 type Props = {
   name: FieldName,
-  required?: boolean,
-  fieldValue?: FieldValue,
-  defaultValue?: FieldValue,
-  onChange?: (value: FieldValue) => void,
-  validation?: FieldValidateFunction | Array<FieldValidateFunction>,
-  component?: Component,
-  render?: (props: Object) => void,
-  children?: ElementChildren,
-  type?: string,
+  required?: ?boolean,
+  fieldValue?: ?FieldValue,
+  defaultValue?: ?FieldValue,
+  onChange?: ?(value: ?FieldValue) => void,
+  validation?: ?FieldValidateFunction | ?Array<FieldValidateFunction>,
+  component?: ?any,
+  render?: ?(props: Object) => void,
+  type?: ?string,
 }
 
 export default class FormactMe extends Component {
@@ -36,8 +30,8 @@ export default class FormactMe extends Component {
   }
 
   state: {
-    fieldValue: FieldValue,
-    errorMessage: string,
+    fieldValue: ?FieldValue,
+    errorMessage: ?string,
     dirty: boolean,
   }
 
@@ -95,7 +89,7 @@ export default class FormactMe extends Component {
     }
   }
 
-  propagateValue = (fieldValue: FieldValue) => {
+  propagateValue = (fieldValue: ?FieldValue) => {
     this.setState(
       {
         fieldValue,
@@ -111,7 +105,7 @@ export default class FormactMe extends Component {
     }
   }
 
-  onChange = (fieldValue: FieldValue) => {
+  onChange = (fieldValue: ?FieldValue) => {
     this.propagateValue(fieldValue)
 
     if (this.props.onChange) {
@@ -119,7 +113,7 @@ export default class FormactMe extends Component {
     }
   }
 
-  validate = (fieldValue: FieldValue) => {
+  validate = (fieldValue: ?FieldValue) => {
     let { validation, required, type } = this.props
     let errorMessage = ''
 
@@ -152,7 +146,7 @@ export default class FormactMe extends Component {
   }
 
   render() {
-    const { children, component, render, ...other } = this.props
+    const { component, render, ...other } = this.props
     const props = {
       ...other,
       onChange: this.onChange,
@@ -161,14 +155,14 @@ export default class FormactMe extends Component {
       ...this.state,
     }
 
-    return component
-      ? (React.createElement(component, props): null)
-      : render
-        ? render(props)
-        : children
-          ? typeof children === 'function'
-            ? children(props)
-            : !isEmptyChildren(children) ? React.Children.only(children) : null
-          : null
+    if (component) {
+      return React.createElement(component, props)
+    }
+
+    if (render) {
+      return render(props)
+    }
+
+    return null
   }
 }

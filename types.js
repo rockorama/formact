@@ -10,7 +10,10 @@ export type FieldName = string
 
 export type FieldValue = string | boolean | number | Object
 
-export type FieldValidateFunction = () => string
+export type FieldValidateFunction = (
+  value?: ?FieldValue,
+  name?: ?FieldName,
+) => string
 
 export type FormSubmitPayload = {
   valid: boolean,

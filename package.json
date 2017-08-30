@@ -9,9 +9,10 @@
     "build:flow": "flow-copy-source src lib",
     "build:types": "cp ./lib/types.js.flow ./types.js",
     "build": "npm run build:clean && npm run build:compile && npm run build:flow && npm run build:types",
-    "flow": "flow",
+    "flow": "yarn build && flow",
     "lint": "eslint ./src",
     "jest": "jest",
+    "coverage": "jest --coverage",
     "test": "npm run lint && npm run flow && npm run jest",
     "start": "npm test && npm run build",
     "prepublishOnly": "npm start"
@@ -39,6 +40,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "del-cli": "^1.1.0",
+    "enzyme": "^2.9.1",
     "eslint": "^4.2.0",
     "eslint-config-prettier": "^2.3.0",
     "eslint-plugin-flowtype": "^2.34.1",
@@ -49,10 +51,12 @@
     "jest": "^20.0.4",
     "prettier": "^1.5.2",
     "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "react-test-renderer": "^15.6.1"
   },
   "jest": {
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageDirectory": "coverage/"
   },
   "dependencies": {
     "hoist-non-react-statics": "^2.2.1"
