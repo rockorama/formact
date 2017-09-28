@@ -12,13 +12,17 @@ import type {
   FormAddFieldPayload,
 } from './types'
 
-export default class Form extends Component {
-  props: {
-    onSubmit: (e: SyntheticEvent, payload: FormSubmitPayload) => void,
-    onChange?: (payload: FormChangePayload) => void,
-    children: ElementChildren,
-  }
+type Props = {
+  onSubmit: (e: SyntheticEvent<*>, payload: FormSubmitPayload) => void,
+  onChange?: (payload: FormChangePayload) => void,
+  children: ElementChildren,
+}
 
+type State = {
+  submitted: boolean,
+}
+
+export default class Form extends Component<Props, State> {
   static childContextTypes = {
     addField: PropTypes.func,
     removeField: PropTypes.func,
@@ -26,9 +30,7 @@ export default class Form extends Component {
     submitted: PropTypes.func,
   }
 
-  state: {
-    submitted: boolean,
-  } = {
+  state = {
     submitted: false,
   }
 
@@ -115,7 +117,7 @@ export default class Form extends Component {
     return !Object.keys(this.errors).find(field => this.errors[field])
   }
 
-  onSubmit = (e: SyntheticEvent) => {
+  onSubmit = (e: SyntheticEvent<*>) => {
     const valid = this.isValid()
     this.setState({
       submitted: true,
@@ -134,7 +136,7 @@ export default class Form extends Component {
     }
   }
 
-  onChange(e: SyntheticEvent) {
+  onChange(e: SyntheticEvent<*>) {
     e.preventDefault()
   }
 

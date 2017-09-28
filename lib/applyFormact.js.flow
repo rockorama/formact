@@ -14,12 +14,13 @@ const applyFormact = (Component: any) => {
     return (
       <FormactMe
         {...props}
-        render={routeComponentProps =>
+        render={routeComponentProps => (
           <Component
             {...remainingProps}
             {...routeComponentProps}
             ref={wrappedComponentRef}
-          />}
+          />
+        )}
       />
     )
   }

@@ -8,13 +8,14 @@
     "build:compile": "babel src --out-dir lib",
     "build:flow": "flow-copy-source src lib",
     "build:types": "cp ./lib/types.js.flow ./types.js",
-    "build": "npm run build:clean && npm run build:compile && npm run build:flow && npm run build:types",
+    "build":
+      "yarn build:clean && yarn build:compile && yarn build:flow && yarn build:types",
     "flow": "yarn build && flow",
     "lint": "eslint ./src",
     "jest": "jest",
     "coverage": "jest --coverage",
-    "test": "npm run lint && npm run flow && npm run jest",
-    "start": "npm test && npm run build",
+    "test": "yarn lint && yarn flow && yarn jest",
+    "start": "npm test && yarn build",
     "prepublishOnly": "npm start"
   },
   "repository": {
@@ -46,10 +47,10 @@
     "eslint-plugin-flowtype": "^2.34.1",
     "eslint-plugin-prettier": "^2.1.2",
     "eslint-plugin-react": "^7.1.0",
-    "flow-bin": "^0.49.1",
+    "flow-bin": "^0.55.0",
     "flow-copy-source": "^1.2.0",
     "jest": "^20.0.4",
-    "prettier": "^1.5.2",
+    "prettier": "^1.7.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-test-renderer": "^15.6.1"

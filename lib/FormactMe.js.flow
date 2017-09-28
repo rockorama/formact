@@ -9,6 +9,7 @@ import type { FieldName, FieldValue, FieldValidateFunction } from './types'
 
 type Props = {
   name: FieldName,
+  label?: ?string,
   required?: ?boolean,
   fieldValue?: ?FieldValue,
   defaultValue?: ?FieldValue,
@@ -19,20 +20,18 @@ type Props = {
   type?: ?string,
 }
 
-export default class FormactMe extends Component {
-  props: Props
+type State = {
+  fieldValue: ?FieldValue,
+  errorMessage: ?string,
+  dirty: boolean,
+}
 
+export default class FormactMe extends Component<Props, State> {
   static contextTypes = {
     addField: PropTypes.func,
     removeField: PropTypes.func,
     valueChanged: PropTypes.func,
     submitted: PropTypes.func,
-  }
-
-  state: {
-    fieldValue: ?FieldValue,
-    errorMessage: ?string,
-    dirty: boolean,
   }
 
   constructor(props: Props, context: any) {
@@ -42,7 +41,7 @@ export default class FormactMe extends Component {
 
     this.state = {
       fieldValue,
-      errorMessage: this.validate(fieldValue),
+      errorMessage: this.validate(fieldValue, props),
       dirty: false,
     }
   }
@@ -113,8 +112,8 @@ export default class FormactMe extends Component {
     }
   }
 
-  validate = (fieldValue: ?FieldValue) => {
-    let { validation, required, type } = this.props
+  validate = (fieldValue: ?FieldValue, props: Props = this.props) => {
+    let { validation, required, type } = props
     let errorMessage = ''
 
     if (!validation) {
@@ -132,7 +131,7 @@ export default class FormactMe extends Component {
     }
 
     errorMessage = validation
-      .map(fun => fun(fieldValue, this.props.name))
+      .map(fun => fun(fieldValue, props.label || props.name))
       .filter(m => m)
       .join(' ')
 

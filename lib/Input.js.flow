@@ -15,13 +15,15 @@ type Props = {
   type: string,
   value?: string,
   defaultValue?: string,
-  onChange?: (e: SyntheticEvent) => void,
+  onChange?: (e: SyntheticEvent<*>) => void,
   validation?: FieldValidateFunction | Array<FieldValidateFunction>,
 }
 
-export default class Input extends Component {
-  props: Props
+type State = {
+  value: string,
+}
 
+export default class Input extends Component<Props, State> {
   static defaultProps = {
     type: 'text',
   }
@@ -31,10 +33,6 @@ export default class Input extends Component {
     removeField: PropTypes.func,
     valueChanged: PropTypes.func,
     submitted: PropTypes.func,
-  }
-
-  state: {
-    value: string,
   }
 
   constructor(props: Props, context: any) {
@@ -98,7 +96,7 @@ export default class Input extends Component {
     }
   }
 
-  onChange = (e: SyntheticEvent) => {
+  onChange = (e: SyntheticEvent<*>) => {
     const { value } = (e.currentTarget: window.HTMLInputElement)
 
     this.setState(

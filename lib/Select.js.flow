@@ -12,23 +12,21 @@ type Props = {
   required?: boolean,
   value?: string,
   defaultValue?: string,
-  onChange?: (e: SyntheticEvent) => void,
+  onChange?: (e: SyntheticEvent<*>) => void,
   options: Array<string | Object>,
   validation?: FieldValidateFunction | Array<FieldValidateFunction>,
 }
 
-export default class Select extends Component {
-  props: Props
+type State = {
+  value: string,
+}
 
+export default class Select extends Component<Props, State> {
   static contextTypes = {
     addField: PropTypes.func,
     removeField: PropTypes.func,
     valueChanged: PropTypes.func,
     submitted: PropTypes.func,
-  }
-
-  state: {
-    value: string,
   }
 
   constructor(props: Props, context: any) {
@@ -105,7 +103,7 @@ export default class Select extends Component {
     }
   }
 
-  onChange = (e: SyntheticEvent) => {
+  onChange = (e: SyntheticEvent<*>) => {
     const { value } = (e.currentTarget: window.HTMLInputElement)
 
     this.setState(
@@ -144,11 +142,7 @@ export default class Select extends Component {
 
   renderOption(item: string | Object) {
     if (typeof item === 'string') {
-      return (
-        <option key={`option-${item}`}>
-          {item}
-        </option>
-      )
+      return <option key={`option-${item}`}>{item}</option>
     }
     return <option {...item} key={`option-${item.toString()}`} />
   }
