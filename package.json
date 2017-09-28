@@ -1,6 +1,6 @@
 {
   "name": "formact",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "A React Set of Form Components with Context",
   "main": "lib/index.js",
   "scripts": {
