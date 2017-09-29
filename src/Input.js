@@ -78,6 +78,7 @@ export default class Input extends Component<Props, State> {
         value,
         validate: this.validate,
       })
+      value = nextProps.value || nextProps.defaultValue
     }
 
     if (value !== this.state.value) {
