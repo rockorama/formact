@@ -75,24 +75,28 @@ export default class FormactMe extends Component<Props, State> {
     }
 
     if (this.context && this.props.name !== nextProps.name) {
+      const value = nextProps.fieldValue || nextProps.defaultValue
       this.context.removeField(this.props.name)
       this.context.addField({
         name: nextProps.name,
-        fieldValue,
+        value,
         validate: this.validate,
       })
-    }
-
-    if (fieldValue !== this.state.fieldValue) {
+      this.setState({
+        fieldValue: value,
+        errorMessage: this.validate(value, nextProps),
+        dirty: false,
+      })
+    } else if (fieldValue !== this.state.fieldValue) {
       this.propagateValue(fieldValue)
     }
   }
 
-  propagateValue = (fieldValue: ?FieldValue) => {
+  propagateValue = (fieldValue: ?FieldValue, props: Props = this.props) => {
     this.setState(
       {
         fieldValue,
-        errorMessage: this.validate(fieldValue),
+        errorMessage: this.validate(fieldValue, props),
       },
       this.setValueChanged,
     )
