@@ -91,9 +91,9 @@ export default class Input extends Component<Props, State> {
     }
   }
 
-  propagateValue = () => {
+  propagateValue = (props: Props = this.props) => {
     if (this.context && this.context.valueChanged) {
-      this.context.valueChanged(this.props.name, this.state.value)
+      this.context.valueChanged(props.name, this.state.value)
     }
   }
 

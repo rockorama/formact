@@ -19,5 +19,4 @@ export type {
   FieldName,
   FieldValue,
   ElementChildren,
-  ElementChild,
 } from './types'
