@@ -52,13 +52,21 @@ export default class FormactMe extends Component<Props, State> {
       this.context.addField({
         name: this.props.name,
         fieldValue,
-        validate: this.validate,
+        validate: this.validateField,
       })
 
       if (fieldValue) {
         this.propagateValue(fieldValue)
       }
     }
+  }
+
+  validateField = (value: FieldValue): string => {
+    const errorMessage = this.validate(value)
+    this.setState({
+      errorMessage,
+    })
+    return errorMessage
   }
 
   componentWillUnmount() {
@@ -80,7 +88,7 @@ export default class FormactMe extends Component<Props, State> {
       this.context.addField({
         name: nextProps.name,
         value,
-        validate: this.validate,
+        validate: this.validateField,
       })
       this.setState({
         fieldValue: value,
