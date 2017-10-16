@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { keys } from 'lodash'
 
 import type {
   ElementChildren,
@@ -86,7 +87,7 @@ export default class Form extends Component<Props, State> {
   removeField = (name: FieldName) => {
     const newFields = {}
     const newErrors = {}
-    Object.keys(this.fields).forEach(field => {
+    keys(this.fields).forEach(field => {
       if (name !== field) {
         newFields[field] = this.fields[field]
         newErrors[field] = this.errors[field]
@@ -100,7 +101,7 @@ export default class Form extends Component<Props, State> {
   }
 
   validate = () => {
-    Object.keys(this.fields).forEach(field => {
+    keys(this.fields).forEach(field => {
       this.errors[field] = this.validateField(field)
     })
   }
@@ -114,7 +115,7 @@ export default class Form extends Component<Props, State> {
   }
 
   isValid = () => {
-    return !Object.keys(this.errors).find(field => this.errors[field])
+    return !keys(this.errors).find(field => this.errors[field])
   }
 
   onSubmit = (e: SyntheticEvent<*>) => {
