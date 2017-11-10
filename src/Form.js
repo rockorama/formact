@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { keys } from 'lodash'
+import { keys, findIndex } from 'lodash'
 
 import type {
   ElementChildren,
@@ -115,7 +115,9 @@ export default class Form extends Component<Props, State> {
   }
 
   isValid = () => {
-    return !keys(this.errors).find(field => this.errors[field])
+    const errorKeys = keys(this.errors)
+    const errors = findIndex(errorKeys, field => this.errors[field])
+    return errors < 0
   }
 
   onSubmit = (e: SyntheticEvent<*>) => {
