@@ -1,16 +1,20 @@
 // @flow
 
-import _Form from './Form'
-import _Input from './Input'
-import _Select from './Select'
-import _FormactMe from './FormactMe'
-import _applyFormact from './applyFormact'
+import _FormMe from './FormMe'
+import _FieldMe from './FieldMe'
+import _SubmitMe from './SubmitMe'
+import {
+  applyFormactField as _applyFormactField,
+  applyFormactForm as _applyFormactForm,
+  applyFormactSubmit as _applyFormactSubmit,
+} from './applyFormact'
 
-export const Form = _Form
-export const Input = _Input
-export const Select = _Select
-export const FormactMe = _FormactMe
-export const applyFormact = _applyFormact
+export const FormMe = _FormMe
+export const FieldMe = _FieldMe
+export const SubmitMe = _SubmitMe
+export const applyFormactField = _applyFormactField
+export const applyFormactForm = _applyFormactForm
+export const applyFormactSubmit = _applyFormactSubmit
 
 export type {
   FormSubmitPayload,

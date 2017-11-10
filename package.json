@@ -1,7 +1,7 @@
 {
   "name": "formact",
-  "version": "0.10.8",
-  "description": "A React Set of Form Components with Context",
+  "version": "1.0.1",
+  "description": "A React Context for Form Components",
   "main": "lib/index.js",
   "scripts": {
     "build:clean": "del lib",

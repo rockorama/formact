@@ -14,9 +14,10 @@ import type {
 } from './types'
 
 type Props = {
-  onSubmit: (e: SyntheticEvent<*>, payload: FormSubmitPayload) => void,
+  onSubmit: (payload: FormSubmitPayload) => void,
   onChange?: (payload: FormChangePayload) => void,
-  children: ElementChildren,
+  component?: ?any,
+  render?: ?(props: Object) => void,
 }
 
 type State = {
@@ -29,6 +30,7 @@ export default class Form extends Component<Props, State> {
     removeField: PropTypes.func,
     valueChanged: PropTypes.func,
     submitted: PropTypes.func,
+    submitForm: PropTypes.func,
   }
 
   state = {
@@ -46,6 +48,7 @@ export default class Form extends Component<Props, State> {
       removeField: this.removeField,
       valueChanged: this.valueChanged,
       submitted: this.checkSubmitted,
+      submitForm: this.onSubmit,
     }
   }
 
@@ -120,18 +123,14 @@ export default class Form extends Component<Props, State> {
     return errors < 0
   }
 
-  onSubmit = (e: SyntheticEvent<*>) => {
+  onSubmit = () => {
     const valid = this.isValid()
     this.setState({
       submitted: true,
     })
 
-    if (!valid) {
-      e.preventDefault()
-    }
-
     if (this.props.onSubmit) {
-      this.props.onSubmit(e, {
+      this.props.onSubmit({
         valid,
         fields: this.fields,
         errors: this.errors,
@@ -139,16 +138,21 @@ export default class Form extends Component<Props, State> {
     }
   }
 
-  onChange(e: SyntheticEvent<*>) {
-    e.preventDefault()
-  }
-
   render() {
-    let { children, ...others } = this.props
-    return (
-      <form {...others} onChange={this.onChange} onSubmit={this.onSubmit}>
-        {children}
-      </form>
-    )
+    const { component, render, ...other } = this.props
+    const props = {
+      ...other,
+      onSubmit: this.onSubmit,
+    }
+
+    if (component) {
+      return React.createElement(component, props)
+    }
+
+    if (render) {
+      return render(props)
+    }
+
+    return null
   }
 }

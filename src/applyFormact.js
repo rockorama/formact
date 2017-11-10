@@ -2,17 +2,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import hoistStatics from 'hoist-non-react-statics'
-import FormactMe from './FormactMe'
+import FieldMe from './FieldMe'
+import FormMe from './FormMe'
+import SubmitMe from './SubmitMe'
 
 /**
  * A public higher-order component to apply formact context
  */
-const applyFormact = (Component: any) => {
+const applyFormactElement = (Component: any, type: ?string) => {
   const C = (props: Object) => {
     const { wrappedComponentRef, ...remainingProps } = props
+    const RootComponent =
+      type === 'form' ? FormMe : type === 'submit' ? SubmitMe : FieldMe
 
     return (
-      <FormactMe
+      <RootComponent
         {...props}
         render={routeComponentProps => (
           <Component
@@ -34,4 +38,9 @@ const applyFormact = (Component: any) => {
   return hoistStatics(C, Component)
 }
 
-export default applyFormact
+export const applyFormactSubmit = (Component: any) =>
+  applyFormactElement(Component, 'submit')
+export const applyFormactField = (Component: any) =>
+  applyFormactElement(Component, 'field')
+export const applyFormactForm = (Component: any) =>
+  applyFormactElement(Component, 'form')

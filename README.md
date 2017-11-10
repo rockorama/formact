@@ -1,1 +1,1 @@
-# Formact - A react form component
+# Formact - A react context for form components

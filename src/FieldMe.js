@@ -26,12 +26,13 @@ type State = {
   dirty: boolean,
 }
 
-export default class FormactMe extends Component<Props, State> {
+export default class FieldMe extends Component<Props, State> {
   static contextTypes = {
     addField: PropTypes.func,
     removeField: PropTypes.func,
     valueChanged: PropTypes.func,
     submitted: PropTypes.func,
+    submitForm: PropTypes.func,
   }
 
   constructor(props: Props, context: any) {
@@ -163,6 +164,7 @@ export default class FormactMe extends Component<Props, State> {
       onChange: this.onChange,
       setDirty: this.setDirty,
       submitted: this.context.submitted(),
+      onSubmit: this.context.submitForm,
       ...this.state,
     }
 
