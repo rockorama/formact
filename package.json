@@ -1,6 +1,6 @@
 {
   "name": "formact",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A React Context for Form Components",
   "main": "lib/index.js",
   "scripts": {
@@ -60,6 +60,7 @@
     "coverageDirectory": "coverage/"
   },
   "dependencies": {
+    "formact": "^1.0.1",
     "hoist-non-react-statics": "^2.2.1",
     "lodash": "^4.17.4"
   }

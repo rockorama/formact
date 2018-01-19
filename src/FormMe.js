@@ -14,7 +14,7 @@ import type {
 } from './types'
 
 type Props = {
-  onSubmit: (payload: FormSubmitPayload) => void,
+  onSubmit: (payload: FormSubmitPayload, event: any) => void,
   onChange?: (payload: FormChangePayload) => void,
   component?: ?any,
   render?: ?(props: Object) => void,
@@ -123,18 +123,21 @@ export default class Form extends Component<Props, State> {
     return errors < 0
   }
 
-  onSubmit = () => {
+  onSubmit = (event: any) => {
     const valid = this.isValid()
     this.setState({
       submitted: true,
     })
 
     if (this.props.onSubmit) {
-      this.props.onSubmit({
-        valid,
-        fields: this.fields,
-        errors: this.errors,
-      })
+      this.props.onSubmit(
+        {
+          valid,
+          fields: this.fields,
+          errors: this.errors,
+        },
+        event,
+      )
     }
   }
 
