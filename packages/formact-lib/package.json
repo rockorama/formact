@@ -1,0 +1,29 @@
+{
+  "name": "formact",
+  "version": "2.0.2",
+  "description": "Context for React form components with validation",
+  "scripts": {
+    "build:clean": "del-cli lib",
+    "build:js": "cross-env BABEL_ENV=browser-cjs babel src --out-dir lib --ignore test.js",
+    "build:flow": "flow-copy-source src lib",
+    "build": "yarn build:clean && yarn build:js && yarn build:flow",
+    "start": "cross-env BABEL_ENV=test babel src --out-dir lib  --watch --ignore test.js",
+    "flow:install": "flow-typed install --ignoreDeps=dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diogoperillo/formact.git"
+  },
+  "author": "Diogo Perillo",
+  "bugs": {
+    "url": "https://github.com/diogoperillo/formact/issues"
+  },
+  "homepage": "https://github.com/diogoperillo/formact#readme",
+  "module": "lib/index.js",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.13.1"
+  }
+}

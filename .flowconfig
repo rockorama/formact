@@ -1,0 +1,28 @@
+[ignore]
+.*/bin/.*
+.*/ios/*
+.*/node_modules/react-native-image-picker
+
+[include]
+
+[libs]
+./flow-typed/libdef.js
+
+[lints]
+
+[options]
+include_warnings=true
+module.name_mapper.extension='css' -> 'empty/object'
+module.name_mapper.extension='scss' -> 'empty/object'
+module.name_mapper.extension='ico' -> 'empty/object'
+module.name_mapper='react-native-web' -> 'empty/object'
+module.name_mapper='react-native' -> 'empty/object'
+module.name_mapper='react-youtube' -> 'empty/object'
+module.name_mapper='react-native-image-picker' -> 'empty/object'
+
+[strict]
+
+[untyped]
+.*/node_modules/react-native
+.*/node_modules/graphql
+.*/node_modules/xdl
