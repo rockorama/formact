@@ -33,7 +33,8 @@ var FormContext = (0, _react.createContext)({
   isDirty: function isDirty() {
     return false;
   },
-  setDirty: function setDirty() {}
+  setDirty: function setDirty() {},
+  setError: function setError() {}
 });
 
 var validate = function validate(newstate) {
@@ -47,6 +48,10 @@ var validate = function validate(newstate) {
 
       if (fieldErrors === ' ') {
         fieldErrors = '';
+      }
+
+      if (newstate.forcedErrors[key]) {
+        fieldErrors = fieldErrors + ' ' + newstate.forcedErrors[key];
       }
 
       errors[key] = fieldErrors;
@@ -63,7 +68,7 @@ var validate = function validate(newstate) {
 };
 
 var reducer = function reducer(state, action) {
-  var _objectSpread4, _objectSpread5, _objectSpread6, _objectSpread7;
+  var _objectSpread4, _objectSpread5, _objectSpread6, _objectSpread7, _objectSpread8;
 
   var newState = {};
 
@@ -123,6 +128,12 @@ var reducer = function reducer(state, action) {
       });
       break;
 
+    case 'SET_ERROR':
+      newState = _objectSpread({}, state, {
+        forcedErrors: _objectSpread({}, state.forcedErrors, (_objectSpread8 = {}, _objectSpread8[action.payload.field] = action.payload.message, _objectSpread8))
+      });
+      break;
+
     default:
       newState = state;
       break;
@@ -146,6 +157,7 @@ var useFormReducer = function useFormReducer(initialValue) {
     validations: {},
     errors: {},
     dirty: {},
+    forcedErrors: {},
     values: initialValue,
     valid: true
   }),
@@ -211,6 +223,16 @@ var useFormReducer = function useFormReducer(initialValue) {
     });
   };
 
+  var setError = function setError(field, message) {
+    action({
+      type: 'SET_ERROR',
+      payload: {
+        field: field,
+        message: message
+      }
+    });
+  };
+
   return _objectSpread({}, state, {
     getValue: getValue,
     updateValue: updateValue,
@@ -219,7 +241,8 @@ var useFormReducer = function useFormReducer(initialValue) {
     removeField: removeField,
     isDirty: isDirty,
     setDirty: setDirty,
-    clear: clear
+    clear: clear,
+    setError: setError
   });
 };
 

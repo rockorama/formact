@@ -39,6 +39,7 @@ export type FormContextType = {
   removeField: (field: string) => any,
   submit: () => any,
   clear: () => any,
+  setError: (field: string, message: string) => any,
 }
 
 const FormContext = createContext<FormContextType>({
@@ -56,6 +57,7 @@ const FormContext = createContext<FormContextType>({
   clear: () => {},
   isDirty: () => false,
   setDirty: () => {},
+  setError: () => {},
 })
 
 type State = {
@@ -63,6 +65,7 @@ type State = {
   values: Object,
   validations: Object,
   dirty: Object,
+  forcedErrors: Object,
   valid: boolean,
 }
 
@@ -93,6 +96,14 @@ type SetDirty = {
   },
 }
 
+type SetError = {
+  type: 'SET_ERROR',
+  payload: {
+    field: string,
+    message?: string,
+  },
+}
+
 type ClearAction = {
   type: 'CLEAR',
 }
@@ -103,6 +114,7 @@ type Action =
   | RemoveFieldAction
   | ClearAction
   | SetDirty
+  | SetError
 
 const validate = (newstate) => {
   const errors = {}
@@ -116,6 +128,10 @@ const validate = (newstate) => {
 
       if (fieldErrors === ' ') {
         fieldErrors = ''
+      }
+
+      if (newstate.forcedErrors[key]) {
+        fieldErrors = fieldErrors + ' ' + newstate.forcedErrors[key]
       }
 
       errors[key] = fieldErrors
@@ -192,6 +208,18 @@ const reducer = (state: State, action: Action) => {
         dirty: { ...state.dirty, [action.payload.field]: true },
       }
       break
+
+    case 'SET_ERROR':
+      newState = {
+        ...state,
+        forcedErrors: {
+          ...state.forcedErrors,
+          [action.payload.field]: action.payload.message,
+        },
+      }
+
+      break
+
     default:
       newState = state
       break
@@ -209,6 +237,7 @@ const useFormReducer = (initialValue: Object = {}) => {
     validations: {},
     errors: {},
     dirty: {},
+    forcedErrors: {},
     values: initialValue,
     valid: true,
   })
@@ -271,6 +300,16 @@ const useFormReducer = (initialValue: Object = {}) => {
     })
   }
 
+  const setError = (field: string, message?: string) => {
+    action({
+      type: 'SET_ERROR',
+      payload: {
+        field,
+        message,
+      },
+    })
+  }
+
   return {
     ...state,
     getValue,
@@ -281,6 +320,7 @@ const useFormReducer = (initialValue: Object = {}) => {
     isDirty,
     setDirty,
     clear,
+    setError,
   }
 }
 
