@@ -5,7 +5,7 @@ var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWild
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 exports.__esModule = true;
-exports.turnIntoField = exports.default = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
+exports.default = exports.turnIntoField = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
 
 var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
 
@@ -147,10 +147,11 @@ var reducer = function reducer(state, action) {
 
   newState.errors = errors;
   newState.valid = valid;
+  action.onChange && action.onChange(newState);
   return newState;
 };
 
-var useFormReducer = function useFormReducer(initialValue) {
+var useFormReducer = function useFormReducer(initialValue, onChange) {
   if (initialValue === void 0) {
     initialValue = {};
   }
@@ -176,14 +177,16 @@ var useFormReducer = function useFormReducer(initialValue) {
       payload: {
         field: field,
         value: value
-      }
+      },
+      onChange: onChange
     });
   };
 
   var updateValues = function updateValues(collection) {
     action({
       type: 'UPDATE',
-      payload: collection
+      payload: collection,
+      onChange: onChange
     });
   };
 
@@ -193,7 +196,8 @@ var useFormReducer = function useFormReducer(initialValue) {
       payload: {
         field: field,
         validation: validation
-      }
+      },
+      onChange: onChange
     });
   };
 
@@ -202,13 +206,15 @@ var useFormReducer = function useFormReducer(initialValue) {
       type: 'REMOVE',
       payload: {
         field: field
-      }
+      },
+      onChange: onChange
     });
   };
 
   var clear = function clear() {
     action({
-      type: 'CLEAR'
+      type: 'CLEAR',
+      onChange: onChange
     });
   };
 
@@ -231,7 +237,8 @@ var useFormReducer = function useFormReducer(initialValue) {
       payload: {
         field: field,
         message: message
-      }
+      },
+      onChange: onChange
     });
   };
 
@@ -329,36 +336,48 @@ var useField = function useField(props) {
   }, // eslint-disable-next-line
   []);
   var dirty = isDirty(name);
-  var error = errors[name];
-  var showError = !!error && (submitted || dirty);
+  var errorMessage = errors[name];
+  var showError = !!errorMessage && (submitted || dirty);
 
   var onBlur = function onBlur(e) {
     setDirty(name);
     props.onBlur && props.onBlur(e);
   };
 
-  var value = getValue(name);
+  var fieldValue = getValue(name);
 
   var update = function update(newvalue) {
     return updateValue(name, newvalue);
   };
 
-  return {
-    value: value,
+  var payload = {
+    fieldValue: fieldValue,
     update: update,
     showError: showError,
-    error: error,
+    errorMessage: errorMessage,
     onBlur: onBlur,
     submit: submit,
     submitting: submitting,
     valid: valid
   };
+  return payload;
 };
 
 exports.useField = useField;
 
+var turnIntoField = function turnIntoField(Component, defaultErrorMessages) {
+  return function (props) {
+    var fieldProps = useField(_objectSpread({}, props, {
+      defaultErrorMessages: defaultErrorMessages
+    }));
+    return /*#__PURE__*/_react.default.createElement(Component, (0, _extends2.default)({}, props, fieldProps));
+  };
+};
+
+exports.turnIntoField = turnIntoField;
+
 var Form = function Form(props) {
-  var reducer = useFormReducer(props.initialValues);
+  var reducer = useFormReducer(props.initialValues, props.onChange);
 
   var _useState = (0, _react.useState)(false),
       submitted = _useState[0],
@@ -370,20 +389,23 @@ var Form = function Form(props) {
 
   var onSubmit = function onSubmit() {
     setSubmitted(true);
-    setSubmitting(true);
-    props.onSubmit({
-      valid: reducer.valid,
-      values: reducer.values,
-      errors: reducer.errors,
-      onFinish: function onFinish(clear) {
-        setSubmitting(false);
 
-        if (clear) {
-          reducer.clear();
-          setSubmitted(false);
+    if (props.onSubmit) {
+      setSubmitting(true);
+      props.onSubmit && props.onSubmit({
+        valid: reducer.valid,
+        values: reducer.values,
+        errors: reducer.errors,
+        onFinish: function onFinish(clear) {
+          setSubmitting(false);
+
+          if (clear) {
+            reducer.clear();
+            setSubmitted(false);
+          }
         }
-      }
-    });
+      });
+    }
   };
 
   var value = _objectSpread({}, reducer, {
@@ -399,10 +421,3 @@ var Form = function Form(props) {
 
 var _default = Form;
 exports.default = _default;
-
-var turnIntoField = function turnIntoField(props, Component) {
-  var fieldProps = useField(props);
-  return /*#__PURE__*/_react.default.createElement(Component, (0, _extends2.default)({}, props, fieldProps));
-};
-
-exports.turnIntoField = turnIntoField;

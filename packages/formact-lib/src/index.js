@@ -16,6 +16,12 @@ export type FormSubmitPayload = {
   onFinish: (clear?: boolean) => void,
 }
 
+export type FormChangePayload = {
+  valid: boolean,
+  values: Object,
+  errors: Object,
+}
+
 type PayloadField = {
   field: string,
   value?: string,
@@ -72,6 +78,7 @@ type State = {
 type UpdateAction = {
   type: 'UPDATE',
   payload: PayloadField | Array<PayloadField>,
+  onChange?: (payload: FormChangePayload) => any,
 }
 
 type AddFieldAction = {
@@ -80,6 +87,7 @@ type AddFieldAction = {
     field: string,
     validation?: Validation,
   },
+  onChange?: (payload: FormChangePayload) => any,
 }
 
 type RemoveFieldAction = {
@@ -87,6 +95,7 @@ type RemoveFieldAction = {
   payload: {
     field: string,
   },
+  onChange?: (payload: FormChangePayload) => any,
 }
 
 type SetDirty = {
@@ -94,6 +103,7 @@ type SetDirty = {
   payload: {
     field: string,
   },
+  onChange?: (payload: FormChangePayload) => any,
 }
 
 type SetError = {
@@ -102,10 +112,12 @@ type SetError = {
     field: string,
     message?: string,
   },
+  onChange?: (payload: FormChangePayload) => any,
 }
 
 type ClearAction = {
   type: 'CLEAR',
+  onChange?: (payload: FormChangePayload) => any,
 }
 
 type Action =
@@ -229,10 +241,16 @@ const reducer = (state: State, action: Action) => {
 
   newState.errors = errors
   newState.valid = valid
+
+  action.onChange && action.onChange(newState)
+
   return newState
 }
 
-const useFormReducer = (initialValue: Object = {}) => {
+const useFormReducer = (
+  initialValue: Object = {},
+  onChange?: (payload: FormChangePayload) => any,
+) => {
   const [state, action] = useReducer<State, Action>(reducer, {
     validations: {},
     errors: {},
@@ -252,6 +270,7 @@ const useFormReducer = (initialValue: Object = {}) => {
         field,
         value,
       },
+      onChange,
     })
   }
 
@@ -259,6 +278,7 @@ const useFormReducer = (initialValue: Object = {}) => {
     action({
       type: 'UPDATE',
       payload: collection,
+      onChange,
     })
   }
 
@@ -269,6 +289,7 @@ const useFormReducer = (initialValue: Object = {}) => {
         field,
         validation,
       },
+      onChange,
     })
   }
 
@@ -278,12 +299,14 @@ const useFormReducer = (initialValue: Object = {}) => {
       payload: {
         field,
       },
+      onChange,
     })
   }
 
   const clear = () => {
     action({
       type: 'CLEAR',
+      onChange,
     })
   }
 
@@ -307,6 +330,7 @@ const useFormReducer = (initialValue: Object = {}) => {
         field,
         message,
       },
+      onChange,
     })
   }
 
@@ -362,6 +386,17 @@ export const EMAIL_VALIDATION = (errorMessage: string = 'Invalid email.') => (
   }
 
   return errorMessage
+}
+
+export type FieldPayload = {
+  fieldValue?: string,
+  update: (value: string) => any,
+  showError: boolean,
+  errorMessage?: string,
+  onBlur: (e?: Object) => any,
+  submit: () => any,
+  submitting: boolean,
+  valid: boolean,
 }
 
 export const useField = (props: FieldProps) => {
@@ -424,54 +459,77 @@ export const useField = (props: FieldProps) => {
   )
 
   const dirty = isDirty(name)
-  const error = errors[name]
-  const showError = !!error && (submitted || dirty)
+  const errorMessage = errors[name]
+  const showError = !!errorMessage && (submitted || dirty)
 
   const onBlur = (e: Object) => {
     setDirty(name)
     props.onBlur && props.onBlur(e)
   }
 
-  const value = getValue(name)
+  const fieldValue = getValue(name)
   const update = (newvalue: string) => updateValue(name, newvalue)
 
-  return { value, update, showError, error, onBlur, submit, submitting, valid }
+  const payload: FieldPayload = {
+    fieldValue,
+    update,
+    showError,
+    errorMessage,
+    onBlur,
+    submit,
+    submitting,
+    valid,
+  }
+  return payload
 }
 
-export const turnIntoField = (props: FieldProps, Component: any) => {
-  const fieldProps = useField(props)
-  return <Component {...props} {...fieldProps} />
+export const turnIntoField = (
+  Component: any,
+  defaultErrorMessages?: DefaultErrorMessages,
+) => {
+  return (props: Object) => {
+    const fieldProps: FieldPayload = useField({
+      ...props,
+      defaultErrorMessages,
+    })
+
+    return <Component {...props} {...fieldProps} />
+  }
 }
 
 type Children = ?Element<*> | Array<?Element<*>>
 
 export type FormProps = {
-  onSubmit: (payload: FormSubmitPayload) => any,
+  onSubmit?: (payload: FormSubmitPayload) => any,
+  onChange?: (payload: FormChangePayload) => any,
   initialValues?: Object,
   children: Children | ((payload: FormContextType) => Children),
 }
 
 const Form = (props: FormProps) => {
-  const reducer = useFormReducer(props.initialValues)
+  const reducer = useFormReducer(props.initialValues, props.onChange)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const onSubmit = () => {
     setSubmitted(true)
-    setSubmitting(true)
-    props.onSubmit({
-      valid: reducer.valid,
-      values: reducer.values,
-      errors: reducer.errors,
-      onFinish: (clear?: boolean) => {
-        setSubmitting(false)
+    if (props.onSubmit) {
+      setSubmitting(true)
+      props.onSubmit &&
+        props.onSubmit({
+          valid: reducer.valid,
+          values: reducer.values,
+          errors: reducer.errors,
+          onFinish: (clear?: boolean) => {
+            setSubmitting(false)
 
-        if (clear) {
-          reducer.clear()
-          setSubmitted(false)
-        }
-      },
-    })
+            if (clear) {
+              reducer.clear()
+              setSubmitted(false)
+            }
+          },
+        })
+    }
   }
 
   const value = { ...reducer, submitted, submitting, submit: onSubmit }
