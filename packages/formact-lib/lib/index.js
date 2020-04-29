@@ -5,7 +5,9 @@ var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWild
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 exports.__esModule = true;
-exports.default = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
+exports.turnIntoField = exports.default = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
+
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
@@ -397,3 +399,10 @@ var Form = function Form(props) {
 
 var _default = Form;
 exports.default = _default;
+
+var turnIntoField = function turnIntoField(props, Component) {
+  var fieldProps = useField(props);
+  return /*#__PURE__*/_react.default.createElement(Component, (0, _extends2.default)({}, props, fieldProps));
+};
+
+exports.turnIntoField = turnIntoField;

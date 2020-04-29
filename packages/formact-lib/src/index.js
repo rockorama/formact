@@ -21,7 +21,7 @@ type PayloadField = {
   value?: string,
 }
 
-type ValidationFunction = (value: string, values: Object) => ?string
+export type ValidationFunction = (value: string, values: Object) => ?string
 export type Validation = ValidationFunction | Array<ValidationFunction>
 
 export type FormContextType = {
@@ -328,16 +328,18 @@ export const useForm = () => {
   return useContext(FormContext)
 }
 
+export type DefaultErrorMessages = {
+  email?: string,
+  required?: string,
+}
+
 export type FieldProps = {
   name: string,
   validation?: Validation,
   required?: boolean,
   type?: string,
   onBlur?: (event: Object) => any,
-  defaultErrorMessages?: {
-    email?: string,
-    required?: string,
-  },
+  defaultErrorMessages?: DefaultErrorMessages,
 }
 
 const REQUIRED_VALIDATION = (errorMessage: string = 'Required field.') => (
@@ -436,9 +438,14 @@ export const useField = (props: FieldProps) => {
   return { value, update, showError, error, onBlur, submit, submitting, valid }
 }
 
+export const turnIntoField = (props: FieldProps, Component: any) => {
+  const fieldProps = useField(props)
+  return <Component {...props} {...fieldProps} />
+}
+
 type Children = ?Element<*> | Array<?Element<*>>
 
-type FormProps = {
+export type FormProps = {
   onSubmit: (payload: FormSubmitPayload) => any,
   initialValues?: Object,
   children: Children | ((payload: FormContextType) => Children),
