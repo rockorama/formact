@@ -14,12 +14,14 @@ export type FormSubmitPayload = {
   values: Object,
   errors: Object,
   onFinish: (clear?: boolean) => void,
+  setError: (field: string, message: string) => void,
 }
 
 export type FormChangePayload = {
   valid: boolean,
   values: Object,
   errors: Object,
+  action: string,
 }
 
 type PayloadField = {
@@ -117,6 +119,9 @@ type SetError = {
 
 type ClearAction = {
   type: 'CLEAR',
+  payload: {
+    initialValue: Object,
+  },
   onChange?: (payload: FormChangePayload) => any,
 }
 
@@ -207,11 +212,8 @@ const reducer = (state: State, action: Action) => {
       newState = {
         ...state,
         errors: {},
-        values: {},
         dirty: {},
-        validations: {
-          ...state.validations,
-        },
+        values: { ...action.payload.initialValue },
       }
       break
     case 'SET_DIRTY':
@@ -242,7 +244,7 @@ const reducer = (state: State, action: Action) => {
   newState.errors = errors
   newState.valid = valid
 
-  action.onChange && action.onChange(newState)
+  action.onChange && action.onChange({ ...newState, action: action.type })
 
   return newState
 }
@@ -306,6 +308,7 @@ const useFormReducer = (
   const clear = () => {
     action({
       type: 'CLEAR',
+      payload: { initialValue },
       onChange,
     })
   }
@@ -528,6 +531,7 @@ const Form = (props: FormProps) => {
               setSubmitted(false)
             }
           },
+          setError: reducer.setError,
         })
     }
   }

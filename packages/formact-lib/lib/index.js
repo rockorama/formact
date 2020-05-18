@@ -118,9 +118,8 @@ var reducer = function reducer(state, action) {
     case 'CLEAR':
       newState = _objectSpread({}, state, {
         errors: {},
-        values: {},
         dirty: {},
-        validations: _objectSpread({}, state.validations)
+        values: _objectSpread({}, action.payload.initialValue)
       });
       break;
 
@@ -147,7 +146,9 @@ var reducer = function reducer(state, action) {
 
   newState.errors = errors;
   newState.valid = valid;
-  action.onChange && action.onChange(newState);
+  action.onChange && action.onChange(_objectSpread({}, newState, {
+    action: action.type
+  }));
   return newState;
 };
 
@@ -214,6 +215,9 @@ var useFormReducer = function useFormReducer(initialValue, onChange) {
   var clear = function clear() {
     action({
       type: 'CLEAR',
+      payload: {
+        initialValue: initialValue
+      },
       onChange: onChange
     });
   };
@@ -403,7 +407,8 @@ var Form = function Form(props) {
             reducer.clear();
             setSubmitted(false);
           }
-        }
+        },
+        setError: reducer.setError
       });
     }
   };
