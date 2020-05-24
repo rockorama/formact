@@ -45,7 +45,7 @@ export type FormContextType = {
   updateValues: (fields: Array<PayloadField>) => any,
   addField: (field: string, validation?: Validation) => any,
   removeField: (field: string) => any,
-  submit: () => any,
+  submit: (mode?: any) => any,
   clear: () => any,
   setError: (field: string, message: string) => any,
 }
@@ -503,7 +503,7 @@ export const turnIntoField = (
 type Children = ?Element<*> | Array<?Element<*>>
 
 export type FormProps = {
-  onSubmit?: (payload: FormSubmitPayload) => any,
+  onSubmit?: (payload: FormSubmitPayload, mode?: string) => any,
   onChange?: (payload: FormChangePayload) => any,
   initialValues?: Object,
   children: Children | ((payload: FormContextType) => Children),
@@ -514,25 +514,28 @@ const Form = (props: FormProps) => {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const onSubmit = () => {
+  const onSubmit = (mode?: any) => {
     setSubmitted(true)
     if (props.onSubmit) {
       setSubmitting(true)
       props.onSubmit &&
-        props.onSubmit({
-          valid: reducer.valid,
-          values: reducer.values,
-          errors: reducer.errors,
-          onFinish: (clear?: boolean) => {
-            setSubmitting(false)
+        props.onSubmit(
+          {
+            valid: reducer.valid,
+            values: reducer.values,
+            errors: reducer.errors,
+            onFinish: (clear?: boolean) => {
+              setSubmitting(false)
 
-            if (clear) {
-              reducer.clear()
-              setSubmitted(false)
-            }
+              if (clear) {
+                reducer.clear()
+                setSubmitted(false)
+              }
+            },
+            setError: reducer.setError,
           },
-          setError: reducer.setError,
-        })
+          mode,
+        )
     }
   }
 

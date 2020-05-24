@@ -391,7 +391,7 @@ var Form = function Form(props) {
       submitting = _useState2[0],
       setSubmitting = _useState2[1];
 
-  var onSubmit = function onSubmit() {
+  var onSubmit = function onSubmit(mode) {
     setSubmitted(true);
 
     if (props.onSubmit) {
@@ -409,7 +409,7 @@ var Form = function Form(props) {
           }
         },
         setError: reducer.setError
-      });
+      }, mode);
     }
   };
 
