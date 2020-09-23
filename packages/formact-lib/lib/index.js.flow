@@ -21,7 +21,7 @@ export type FormChangePayload = {
   valid: boolean,
   values: Object,
   errors: Object,
-  action: string,
+  action?: string,
 }
 
 type PayloadField = {
