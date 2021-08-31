@@ -197,7 +197,7 @@ const useForm = () => {
     return (0, react_1.useContext)(FormContext);
 };
 exports.useForm = useForm;
-const REQUIRED_VALIDATION = (errorMessage = 'Required field.') => (value) => (!value ? errorMessage : '');
+const REQUIRED_VALIDATION = (errorMessage = 'Required field.') => (value) => !value ? errorMessage : '';
 /* eslint-disable */
 exports.EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 /* eslint-enable */

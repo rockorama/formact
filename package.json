@@ -1,8 +1,12 @@
 {
-  "name": "formact-monorepo",
-  "private": true,
-  "version": "1.0.0",
-  "description": "Monorepo for Formact module",
+  "name": "formact",
+  "version": "3.0.3",
+  "description": "Context for React form components with validation",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ship": "npm run build && npm version patch && npm publish --access public && git push"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/diogoperillo/formact.git"
@@ -12,36 +16,17 @@
     "url": "https://github.com/diogoperillo/formact/issues"
   },
   "homepage": "https://github.com/diogoperillo/formact#readme",
-  "main": "index.js",
-  "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "build": "lerna run build",
-    "publish": "cd packages/formact-lib && npm publish",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "license": "MIT",
-  "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-object-rest-spread": "^7.9.5",
-    "@babel/plugin-transform-runtime": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@babel/preset-flow": "^7.9.0",
-    "@babel/preset-react": "^7.9.4",
-    "babel-plugin-react-native-web": "^0.12.2",
-    "cross-env": "^7.0.2",
-    "del-cli": "^3.0.0",
-    "eslint": "^6.8.0",
-    "eslint-config-mainframe": "^4.0.1",
-    "flow-bin": "^0.123.0",
-    "flow-copy-source": "^2.0.9",
-    "lerna": "^3.20.2",
-    "prettier": "^2.0.5"
+  "peerDependencies": {
+    "react": "^17.0.19"
+  },
+  "dependencies": {
+    "@types/react": "^17.0.19",
+    "typescript": "^4.4.2"
   }
 }
