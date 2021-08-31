@@ -1,7 +1,4 @@
-// @flow
-
 import React, {
-  type Element,
   useReducer,
   useContext,
   createContext,
@@ -9,45 +6,50 @@ import React, {
   useEffect,
 } from 'react'
 
+type ObjectRecord = Record<string, any>
+
 export type FormSubmitPayload = {
-  valid: boolean,
-  values: Object,
-  errors: Object,
-  onFinish: (clear?: boolean) => void,
-  setError: (field: string, message: string) => void,
+  valid: boolean
+  values: ObjectRecord
+  errors: ObjectRecord
+  onFinish: (clear?: boolean) => void
+  setError: (field: string, message: string) => void
 }
 
 export type FormChangePayload = {
-  valid: boolean,
-  values: Object,
-  errors: Object,
-  action?: string,
+  valid: boolean
+  values: ObjectRecord
+  errors: ObjectRecord
+  action?: string
 }
 
 type PayloadField = {
-  field: string,
-  value?: string,
+  field: string
+  value?: string
 }
 
-export type ValidationFunction = (value: string, values: Object) => ?string
+export type ValidationFunction = (
+  value: string,
+  values: ObjectRecord,
+) => string | null | undefined
 export type Validation = ValidationFunction | Array<ValidationFunction>
 
 export type FormContextType = {
-  errors: Object,
-  values: Object,
-  valid: boolean,
-  submitted: boolean,
-  submitting: boolean,
-  isDirty: (field: string) => boolean,
-  setDirty: (field: string) => any,
-  getValue: (field: string) => string,
-  updateValue: (field: string, value: string) => any,
-  updateValues: (fields: Array<PayloadField>) => any,
-  addField: (field: string, validation?: Validation) => any,
-  removeField: (field: string) => any,
-  submit: (mode?: any) => any,
-  clear: () => any,
-  setError: (field: string, message: string) => any,
+  errors: ObjectRecord
+  values: ObjectRecord
+  valid: boolean
+  submitted: boolean
+  submitting: boolean
+  isDirty: (field: string) => boolean
+  setDirty: (field: string) => any
+  getValue: (field: string) => string
+  updateValue: (field: string, value: string) => any
+  updateValues: (fields: Array<PayloadField>) => any
+  addField: (field: string, validation?: Validation) => any
+  removeField: (field: string) => any
+  submit: (mode?: any) => any
+  clear: () => any
+  setError: (field: string, message: string) => any
 }
 
 const FormContext = createContext<FormContextType>({
@@ -69,60 +71,60 @@ const FormContext = createContext<FormContextType>({
 })
 
 type State = {
-  errors: Object,
-  values: Object,
-  validations: Object,
-  dirty: Object,
-  forcedErrors: Object,
-  valid: boolean,
+  errors: ObjectRecord
+  values: ObjectRecord
+  validations: ObjectRecord
+  dirty: ObjectRecord
+  forcedErrors: ObjectRecord
+  valid: boolean
 }
 
 type UpdateAction = {
-  type: 'UPDATE',
-  payload: PayloadField | Array<PayloadField>,
-  onChange?: (payload: FormChangePayload) => any,
+  type: 'UPDATE'
+  payload: PayloadField | Array<PayloadField>
+  onChange?: (payload: FormChangePayload) => any
 }
 
 type AddFieldAction = {
-  type: 'ADD',
+  type: 'ADD'
   payload: {
-    field: string,
-    validation?: Validation,
-  },
-  onChange?: (payload: FormChangePayload) => any,
+    field: string
+    validation?: Validation
+  }
+  onChange?: (payload: FormChangePayload) => any
 }
 
 type RemoveFieldAction = {
-  type: 'REMOVE',
+  type: 'REMOVE'
   payload: {
-    field: string,
-  },
-  onChange?: (payload: FormChangePayload) => any,
+    field: string
+  }
+  onChange?: (payload: FormChangePayload) => any
 }
 
 type SetDirty = {
-  type: 'SET_DIRTY',
+  type: 'SET_DIRTY'
   payload: {
-    field: string,
-  },
-  onChange?: (payload: FormChangePayload) => any,
+    field: string
+  }
+  onChange?: (payload: FormChangePayload) => any
 }
 
 type SetError = {
-  type: 'SET_ERROR',
+  type: 'SET_ERROR'
   payload: {
-    field: string,
-    message?: string,
-  },
-  onChange?: (payload: FormChangePayload) => any,
+    field: string
+    message?: string
+  }
+  onChange?: (payload: FormChangePayload) => any
 }
 
 type ClearAction = {
-  type: 'CLEAR',
+  type: 'CLEAR'
   payload: {
-    initialValue: Object,
-  },
-  onChange?: (payload: FormChangePayload) => any,
+    initialValue: ObjectRecord
+  }
+  onChange?: (payload: FormChangePayload) => any
 }
 
 type Action =
@@ -133,7 +135,7 @@ type Action =
   | SetDirty
   | SetError
 
-const validate = (newstate) => {
+const validate = (newstate: State) => {
   const errors = {}
 
   let valid = true
@@ -160,8 +162,8 @@ const validate = (newstate) => {
   return { errors, valid }
 }
 
-const reducer = (state: State, action: Action) => {
-  let newState = {}
+function reducer(state: State, action: Action): State {
+  let newState: State = {} as State
 
   switch (action.type) {
     case 'UPDATE':
@@ -250,10 +252,10 @@ const reducer = (state: State, action: Action) => {
 }
 
 const useFormReducer = (
-  initialValue: Object = {},
+  initialValue: ObjectRecord = {},
   onChange?: (payload: FormChangePayload) => any,
 ) => {
-  const [state, action] = useReducer<State, Action>(reducer, {
+  const [state, action] = useReducer(reducer, {
     validations: {},
     errors: {},
     dirty: {},
@@ -261,6 +263,7 @@ const useFormReducer = (
     values: initialValue,
     valid: true,
   })
+
   const getValue = (field: string) => {
     return state.values[field] || ''
   }
@@ -356,17 +359,17 @@ export const useForm = () => {
 }
 
 export type DefaultErrorMessages = {
-  email?: string,
-  required?: string,
+  email?: string
+  required?: string
 }
 
 export type FieldProps = {
-  name: string,
-  validation?: Validation,
-  required?: boolean,
-  type?: string,
-  onBlur?: (event: Object) => any,
-  defaultErrorMessages?: DefaultErrorMessages,
+  name: string
+  validation?: Validation
+  required?: boolean
+  type?: string
+  onBlur?: (event: ObjectRecord) => any
+  defaultErrorMessages?: DefaultErrorMessages
 }
 
 const REQUIRED_VALIDATION = (errorMessage: string = 'Required field.') => (
@@ -392,14 +395,14 @@ export const EMAIL_VALIDATION = (errorMessage: string = 'Invalid email.') => (
 }
 
 export type FieldPayload = {
-  fieldValue?: string,
-  update: (value: string) => any,
-  showError: boolean,
-  errorMessage?: string,
-  onBlur: (e?: Object) => any,
-  submit: () => any,
-  submitting: boolean,
-  valid: boolean,
+  fieldValue?: string
+  update: (value: string) => any
+  showError: boolean
+  errorMessage?: string
+  onBlur: (e?: ObjectRecord) => any
+  submit: () => any
+  submitting: boolean
+  valid: boolean
 }
 
 export const useField = (props: FieldProps) => {
@@ -465,7 +468,7 @@ export const useField = (props: FieldProps) => {
   const errorMessage = errors[name]
   const showError = !!errorMessage && (submitted || dirty)
 
-  const onBlur = (e: Object) => {
+  const onBlur = (e: ObjectRecord) => {
     setDirty(name)
     props.onBlur && props.onBlur(e)
   }
@@ -490,7 +493,7 @@ export const turnIntoField = (
   Component: any,
   defaultErrorMessages?: DefaultErrorMessages,
 ) => {
-  return (props: Object) => {
+  return (props: FieldProps) => {
     const fieldProps: FieldPayload = useField({
       ...props,
       defaultErrorMessages,
@@ -500,13 +503,13 @@ export const turnIntoField = (
   }
 }
 
-type Children = ?Element<*> | Array<?Element<*>>
+type Children = (JSX.Element | null)[] | (JSX.Element | null)
 
 export type FormProps = {
-  onSubmit?: (payload: FormSubmitPayload, mode?: string) => any,
-  onChange?: (payload: FormChangePayload) => any,
-  initialValues?: Object,
-  children: Children | ((payload: FormContextType) => Children),
+  onSubmit?: (payload: FormSubmitPayload, mode?: string) => any
+  onChange?: (payload: FormChangePayload) => any
+  initialValues?: ObjectRecord
+  children: Children | ((payload: FormContextType) => Children)
 }
 
 const Form = (props: FormProps) => {
