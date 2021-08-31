@@ -1,15 +1,13 @@
 {
   "name": "formact",
-  "version": "2.0.12",
+  "version": "3.0.3",
   "description": "Context for React form components with validation",
   "scripts": {
-    "build:clean": "del-cli lib",
-    "build:js": "cross-env BABEL_ENV=browser-cjs babel src --out-dir lib --ignore test.js",
-    "build:flow": "flow-copy-source src lib",
-    "build": "yarn build:clean && yarn build:js && yarn build:flow",
-    "start": "cross-env BABEL_ENV=test babel src --out-dir lib  --watch --ignore test.js",
+    "build": "tsc",
+    "start": "nodemon --config nodemon.json src/test.ts",
     "flow:install": "flow-typed install --ignoreDeps=dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ship": "npm run build && npm version patch && npm publish --access public && git push"
   },
   "repository": {
     "type": "git",
@@ -20,10 +18,18 @@
     "url": "https://github.com/diogoperillo/formact/issues"
   },
   "homepage": "https://github.com/diogoperillo/formact#readme",
-  "module": "lib/index.js",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "license": "MIT",
   "peerDependencies": {
-    "react": "^16.13.1"
+    "react": "^17.0.19"
+  },
+  "dependencies": {
+    "@types/react": "^17.0.19",
+    "nodemon": "^2.0.12",
+    "typescript": "^4.4.2"
   }
 }
