@@ -491,17 +491,17 @@ export const useField = (props: FieldProps) => {
   return payload
 }
 
-export const turnIntoField = (
-  Component: any,
+export const turnIntoField = <ComponentProps extends object>(
+  Component: React.ComponentType<ComponentProps>,
   defaultErrorMessages?: DefaultErrorMessages,
-) => {
-  return (props: FieldProps) => {
+): React.FC<ComponentProps & FieldProps> => {
+  return (props: FieldProps & ComponentProps) => {
     const fieldProps: FieldPayload = useField({
       ...props,
       defaultErrorMessages,
     })
 
-    return <Component {...props} {...fieldProps} />
+    return <Component {...(props as ComponentProps)} {...fieldProps} />
   }
 }
 

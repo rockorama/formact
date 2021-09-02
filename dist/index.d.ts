@@ -1,4 +1,4 @@
-/// <reference types="react" />
+import React from 'react';
 declare type ObjectRecord = Record<string, any>;
 export declare type FormSubmitPayload = {
     valid: boolean;
@@ -62,7 +62,7 @@ export declare type FieldPayload = {
     valid: boolean;
 };
 export declare const useField: (props: FieldProps) => FieldPayload;
-export declare const turnIntoField: (Component: any, defaultErrorMessages?: DefaultErrorMessages) => (props: FieldProps) => JSX.Element;
+export declare const turnIntoField: <ComponentProps extends object>(Component: React.ComponentType<ComponentProps>, defaultErrorMessages?: DefaultErrorMessages) => React.FC<ComponentProps & FieldProps>;
 declare type Children = (JSX.Element | null)[] | (JSX.Element | null);
 export declare type FormProps = {
     onSubmit?: (payload: FormSubmitPayload, mode?: string) => any;
