@@ -268,13 +268,6 @@ const useField = (props) => {
     return payload;
 };
 exports.useField = useField;
-const turnIntoField = (Component, defaultErrorMessages) => {
-    return (props) => {
-        const fieldProps = (0, exports.useField)(Object.assign(Object.assign({}, props), { defaultErrorMessages }));
-        return react_1.default.createElement(Component, Object.assign({}, props, fieldProps));
-    };
-};
-exports.turnIntoField = turnIntoField;
 const Form = (props) => {
     const reducer = useFormReducer(props.initialValues, props.onChange);
     const [submitted, setSubmitted] = (0, react_1.useState)(false);
@@ -304,4 +297,11 @@ const Form = (props) => {
         ? props.children(value)
         : props.children));
 };
+const turnIntoField = (Component, defaultErrorMessages) => {
+    return (props) => {
+        const fieldProps = (0, exports.useField)(Object.assign(Object.assign({}, props), { defaultErrorMessages }));
+        return react_1.default.createElement(Component, Object.assign({}, props, fieldProps));
+    };
+};
+exports.turnIntoField = turnIntoField;
 exports.default = Form;

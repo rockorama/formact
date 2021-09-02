@@ -62,7 +62,6 @@ export declare type FieldPayload = {
     valid: boolean;
 };
 export declare const useField: (props: FieldProps) => FieldPayload;
-export declare const turnIntoField: <ComponentProps extends object>(Component: React.ComponentType<ComponentProps>, defaultErrorMessages?: DefaultErrorMessages) => React.FC<ComponentProps & FieldProps>;
 declare type Children = (JSX.Element | null)[] | (JSX.Element | null);
 export declare type FormProps = {
     onSubmit?: (payload: FormSubmitPayload, mode?: string) => any;
@@ -71,4 +70,8 @@ export declare type FormProps = {
     children: Children | ((payload: FormContextType) => Children);
 };
 declare const Form: (props: FormProps) => JSX.Element;
+declare type SetDifference<A, B> = A extends B ? never : A;
+declare type SetComplement<A, A1 extends A> = SetDifference<A, A1>;
+declare type Subtract<T extends T1, T1 extends object> = Pick<T, SetComplement<keyof T, keyof T1>>;
+export declare const turnIntoField: <ComponentProps extends FieldPayload>(Component: React.ComponentType<ComponentProps>, defaultErrorMessages?: DefaultErrorMessages) => React.FC<Subtract<ComponentProps, FieldPayload> & FieldProps>;
 export default Form;
