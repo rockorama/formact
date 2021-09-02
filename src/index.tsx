@@ -491,20 +491,6 @@ export const useField = (props: FieldProps) => {
   return payload
 }
 
-export const turnIntoField = <ComponentProps extends object>(
-  Component: React.ComponentType<ComponentProps>,
-  defaultErrorMessages?: DefaultErrorMessages,
-): React.FC<ComponentProps & FieldProps> => {
-  return (props: FieldProps & ComponentProps) => {
-    const fieldProps: FieldPayload = useField({
-      ...props,
-      defaultErrorMessages,
-    })
-
-    return <Component {...(props as ComponentProps)} {...fieldProps} />
-  }
-}
-
 type Children = (JSX.Element | null)[] | (JSX.Element | null)
 
 export type FormProps = {
@@ -553,6 +539,30 @@ const Form = (props: FormProps) => {
         : props.children}
     </FormContext.Provider>
   )
+}
+
+// Helper rescource to turn a component into a Field
+type SetDifference<A, B> = A extends B ? never : A
+
+type SetComplement<A, A1 extends A> = SetDifference<A, A1>
+
+type Subtract<T extends T1, T1 extends object> = Pick<
+  T,
+  SetComplement<keyof T, keyof T1>
+>
+
+export const turnIntoField = <ComponentProps extends FieldPayload>(
+  Component: React.ComponentType<ComponentProps>,
+  defaultErrorMessages?: DefaultErrorMessages,
+): React.FC<Subtract<ComponentProps, FieldPayload> & FieldProps> => {
+  return (props: FieldProps & ComponentProps) => {
+    const fieldProps: FieldPayload = useField({
+      ...props,
+      defaultErrorMessages,
+    })
+
+    return <Component {...(props as ComponentProps)} {...fieldProps} />
+  }
 }
 
 export default Form
