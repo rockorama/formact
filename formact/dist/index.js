@@ -19,11 +19,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.turnIntoField = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
+exports.turnIntoField = exports.GenericForm = exports.Form = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
 const react_1 = __importStar(require("react"));
 const FormContext = (0, react_1.createContext)({
     errors: {},
     values: {},
+    inForm: false,
     valid: true,
     submitted: false,
     submitting: false,
@@ -38,7 +39,7 @@ const FormContext = (0, react_1.createContext)({
     setDirty: () => { },
     setError: () => { },
 });
-const validate = (newstate) => {
+function validate(newstate) {
     const errors = {};
     let valid = true;
     Object.keys(newstate.validations).forEach((key) => {
@@ -59,9 +60,10 @@ const validate = (newstate) => {
         }
     });
     return { errors, valid };
-};
-function reducer(state, action) {
+}
+const createReducer = () => (state, action) => {
     let newState = {};
+    const currentValues = state.values;
     switch (action.type) {
         case 'UPDATE':
             if (Array.isArray(action.payload)) {
@@ -69,10 +71,10 @@ function reducer(state, action) {
                 action.payload.forEach((element) => {
                     values[element.field] = element.value;
                 });
-                newState = Object.assign(Object.assign({}, state), { values: Object.assign(Object.assign({}, state.values), values) });
+                newState = Object.assign(Object.assign({}, state), { values: Object.assign(Object.assign({}, currentValues), values) });
             }
             else {
-                newState = Object.assign(Object.assign({}, state), { values: Object.assign(Object.assign({}, state.values), { [action.payload.field]: action.payload.value }) });
+                newState = Object.assign(Object.assign({}, state), { values: Object.assign(Object.assign({}, currentValues), { [action.payload.field]: action.payload.value }) });
             }
             break;
         case 'ADD':
@@ -86,10 +88,10 @@ function reducer(state, action) {
             }
             break;
         case 'REMOVE':
-            newState = Object.assign(Object.assign({}, state), { errors: Object.assign(Object.assign({}, state.errors), { [action.payload.field]: undefined }), values: Object.assign(Object.assign({}, state.values), { [action.payload.field]: undefined }), validations: Object.assign(Object.assign({}, state.validations), { [action.payload.field]: undefined }) });
+            newState = Object.assign(Object.assign({}, state), { errors: Object.assign(Object.assign({}, state.errors), { [action.payload.field]: undefined }), values: Object.assign(Object.assign({}, currentValues), { [action.payload.field]: undefined }), validations: Object.assign(Object.assign({}, state.validations), { [action.payload.field]: undefined }) });
             break;
         case 'CLEAR':
-            newState = Object.assign(Object.assign({}, state), { errors: {}, dirty: {}, values: Object.assign({}, action.payload.initialValue) });
+            newState = Object.assign(Object.assign({}, state), { errors: {}, dirty: {}, values: Object.assign({}, action.payload.initialValues) });
             break;
         case 'SET_DIRTY':
             newState = Object.assign(Object.assign({}, state), { dirty: Object.assign(Object.assign({}, state.dirty), { [action.payload.field]: true }) });
@@ -106,18 +108,20 @@ function reducer(state, action) {
     newState.valid = valid;
     action.onChange && action.onChange(Object.assign(Object.assign({}, newState), { action: action.type }));
     return newState;
-}
-const useFormReducer = (initialValue = {}, onChange) => {
+};
+function useFormReducer(initialValues, onChange) {
+    const reducer = (0, react_1.useCallback)(createReducer(), []);
     const [state, action] = (0, react_1.useReducer)(reducer, {
         validations: {},
         errors: {},
         dirty: {},
         forcedErrors: {},
-        values: initialValue,
+        values: initialValues || {},
         valid: true,
     });
     const getValue = (field) => {
-        return state.values[field] || '';
+        var _a;
+        return (_a = state.values) === null || _a === void 0 ? void 0 : _a[field];
     };
     const updateValue = (field, value) => {
         action({
@@ -158,7 +162,7 @@ const useFormReducer = (initialValue = {}, onChange) => {
     const clear = () => {
         action({
             type: 'CLEAR',
-            payload: { initialValue },
+            payload: { initialValues },
             onChange,
         });
     };
@@ -192,10 +196,10 @@ const useFormReducer = (initialValue = {}, onChange) => {
         setDirty,
         clear,
         setError });
-};
-const useForm = () => {
+}
+function useForm() {
     return (0, react_1.useContext)(FormContext);
-};
+}
 exports.useForm = useForm;
 const REQUIRED_VALIDATION = (errorMessage = 'Required field.') => (value) => !value ? errorMessage : '';
 /* eslint-disable */
@@ -211,9 +215,9 @@ const EMAIL_VALIDATION = (errorMessage = 'Invalid email.') => (value) => {
     return errorMessage;
 };
 exports.EMAIL_VALIDATION = EMAIL_VALIDATION;
-const useField = (props) => {
+function useField(props) {
     const { name } = props;
-    const { errors, getValue, isDirty, setDirty, updateValue, addField, removeField, submitted, submit, submitting, valid, } = (0, exports.useForm)();
+    const { errors, getValue, isDirty, setDirty, updateValue, addField, removeField, submitted, submit, submitting, valid, } = useForm();
     let validation = props.validation
         ? Array.isArray(props.validation)
             ? [...props.validation]
@@ -266,42 +270,48 @@ const useField = (props) => {
         valid,
     };
     return payload;
-};
+}
 exports.useField = useField;
-const Form = (props) => {
+function Form(props) {
     const reducer = useFormReducer(props.initialValues, props.onChange);
     const [submitted, setSubmitted] = (0, react_1.useState)(false);
     const [submitting, setSubmitting] = (0, react_1.useState)(false);
     const onSubmit = (mode) => {
+        var _a;
         setSubmitted(true);
         if (props.onSubmit) {
             setSubmitting(true);
-            props.onSubmit &&
-                props.onSubmit({
-                    valid: reducer.valid,
-                    values: reducer.values,
-                    errors: reducer.errors,
-                    onFinish: (clear) => {
-                        setSubmitting(false);
-                        if (clear) {
-                            reducer.clear();
-                            setSubmitted(false);
-                        }
-                    },
-                    setError: reducer.setError,
-                }, mode);
+            (_a = props.onSubmit) === null || _a === void 0 ? void 0 : _a.call(props, {
+                valid: reducer.valid,
+                values: reducer.values,
+                errors: reducer.errors,
+                onFinish: (clear) => {
+                    setSubmitting(false);
+                    if (clear) {
+                        reducer.clear();
+                        setSubmitted(false);
+                    }
+                },
+                setError: reducer.setError,
+            }, mode);
         }
     };
-    const value = Object.assign(Object.assign({}, reducer), { submitted, submitting, submit: onSubmit });
+    const value = Object.assign(Object.assign({}, reducer), { submitted,
+        submitting, submit: onSubmit, inForm: true });
     return (react_1.default.createElement(FormContext.Provider, { value: value }, typeof props.children === 'function'
         ? props.children(value)
         : props.children));
-};
-const turnIntoField = (Component, defaultErrorMessages) => {
+}
+exports.Form = Form;
+function GenericForm(props) {
+    return react_1.default.createElement(Form, Object.assign({}, props));
+}
+exports.GenericForm = GenericForm;
+function turnIntoField(Component, defaultErrorMessages) {
     return (props) => {
-        const fieldProps = (0, exports.useField)(Object.assign(Object.assign({}, props), { defaultErrorMessages }));
+        const fieldProps = useField(Object.assign(Object.assign({}, props), { defaultErrorMessages }));
         return react_1.default.createElement(Component, Object.assign({}, props, fieldProps));
     };
-};
+}
 exports.turnIntoField = turnIntoField;
 exports.default = Form;

@@ -4,46 +4,63 @@ import React, {
   createContext,
   useState,
   useEffect,
+  useCallback,
 } from 'react'
 
-type ObjectRecord = Record<string, any>
+type GenericObject = Record<string, any>
 
-export type FormSubmitPayload = {
+export type GenericFormType = GenericObject
+
+type FieldValue =
+  | string
+  | boolean
+  | number
+  | GenericObject
+  | Date
+  | null
+  | undefined
+
+type FormValues = Record<string, FieldValue>
+
+type ErrorValues = Record<string, string | null | undefined>
+
+export type FormSubmitPayload<T extends FormValues> = {
   valid: boolean
-  values: ObjectRecord
-  errors: ObjectRecord
+  values: T
+  errors: ErrorValues
   onFinish: (clear?: boolean) => void
   setError: (field: string, message: string) => void
 }
 
-export type FormChangePayload = {
+export type FormChangePayload<T extends FormValues> = {
   valid: boolean
-  values: ObjectRecord
-  errors: ObjectRecord
+  values: T
+  errors: ErrorValues
   action?: string
 }
 
 type PayloadField = {
   field: string
-  value?: string
+  value?: FieldValue
 }
 
 export type ValidationFunction = (
-  value: string,
-  values: ObjectRecord,
+  value: FieldValue,
+  values: Record<string, FieldValue>,
 ) => string | null | undefined
 export type Validation = ValidationFunction | Array<ValidationFunction>
 
 export type FormContextType = {
-  errors: ObjectRecord
-  values: ObjectRecord
+  errors: ErrorValues
+  values: FormValues
+  inForm: boolean
   valid: boolean
   submitted: boolean
   submitting: boolean
   isDirty: (field: string) => boolean
   setDirty: (field: string) => any
-  getValue: (field: string) => string
-  updateValue: (field: string, value: string) => any
+  getValue: (field: string) => FieldValue
+  updateValue: (field: string, value: FieldValue) => any
   updateValues: (fields: Array<PayloadField>) => any
   addField: (field: string, validation?: Validation) => any
   removeField: (field: string) => any
@@ -55,6 +72,7 @@ export type FormContextType = {
 const FormContext = createContext<FormContextType>({
   errors: {},
   values: {},
+  inForm: false,
   valid: true,
   submitted: false,
   submitting: false,
@@ -70,72 +88,72 @@ const FormContext = createContext<FormContextType>({
   setError: () => {},
 })
 
-type State = {
-  errors: ObjectRecord
-  values: ObjectRecord
-  validations: ObjectRecord
-  dirty: ObjectRecord
-  forcedErrors: ObjectRecord
+type State<T extends FormValues> = {
+  errors: ErrorValues
+  values: T
+  validations: Record<string, (ValidationFunction | null)[]>
+  dirty: Record<string, boolean | undefined>
+  forcedErrors: ErrorValues
   valid: boolean
 }
 
-type UpdateAction = {
+type UpdateAction<T extends FormValues> = {
   type: 'UPDATE'
   payload: PayloadField | Array<PayloadField>
-  onChange?: (payload: FormChangePayload) => any
+  onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type AddFieldAction = {
+type AddFieldAction<T extends FormValues> = {
   type: 'ADD'
   payload: {
     field: string
     validation?: Validation
   }
-  onChange?: (payload: FormChangePayload) => any
+  onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type RemoveFieldAction = {
+type RemoveFieldAction<T extends FormValues> = {
   type: 'REMOVE'
   payload: {
     field: string
   }
-  onChange?: (payload: FormChangePayload) => any
+  onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type SetDirty = {
+type SetDirty<T extends FormValues> = {
   type: 'SET_DIRTY'
   payload: {
     field: string
   }
-  onChange?: (payload: FormChangePayload) => any
+  onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type SetError = {
+type SetError<T extends FormValues> = {
   type: 'SET_ERROR'
   payload: {
     field: string
     message?: string
   }
-  onChange?: (payload: FormChangePayload) => any
+  onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type ClearAction = {
+type ClearAction<T extends FormValues> = {
   type: 'CLEAR'
   payload: {
-    initialValue: ObjectRecord
+    initialValues: T
   }
-  onChange?: (payload: FormChangePayload) => any
+  onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type Action =
-  | UpdateAction
-  | AddFieldAction
-  | RemoveFieldAction
-  | ClearAction
-  | SetDirty
-  | SetError
+type Action<T extends FormValues> =
+  | UpdateAction<T>
+  | AddFieldAction<T>
+  | RemoveFieldAction<T>
+  | ClearAction<T>
+  | SetDirty<T>
+  | SetError<T>
 
-const validate = (newstate: State) => {
+function validate<T extends FormValues>(newstate: State<T>) {
   const errors = {}
 
   let valid = true
@@ -162,113 +180,118 @@ const validate = (newstate: State) => {
   return { errors, valid }
 }
 
-function reducer(state: State, action: Action): State {
-  let newState: State = {} as State
+const createReducer =
+  <T extends FormValues>() =>
+  (state: State<T>, action: Action<T>): State<T> => {
+    let newState: State<T> = {} as State<T>
 
-  switch (action.type) {
-    case 'UPDATE':
-      if (Array.isArray(action.payload)) {
-        const values = {}
-        action.payload.forEach((element) => {
-          values[element.field] = element.value
-        })
-        newState = { ...state, values: { ...state.values, ...values } }
-      } else {
-        newState = {
-          ...state,
-          values: {
-            ...state.values,
-            [action.payload.field]: action.payload.value,
-          },
+    const currentValues = state.values
+
+    switch (action.type) {
+      case 'UPDATE':
+        if (Array.isArray(action.payload)) {
+          const values = {}
+          action.payload.forEach((element) => {
+            values[element.field] = element.value
+          })
+          newState = { ...state, values: { ...currentValues, ...values } }
+        } else {
+          newState = {
+            ...state,
+            values: {
+              ...currentValues,
+              [action.payload.field]: action.payload.value,
+            },
+          }
         }
-      }
-      break
-    case 'ADD':
-      if (action.payload.validation) {
+        break
+      case 'ADD':
+        if (action.payload.validation) {
+          newState = {
+            ...state,
+            validations: {
+              ...state.validations,
+              [action.payload.field]: Array.isArray(action.payload.validation)
+                ? action.payload.validation
+                : [action.payload.validation],
+            },
+          }
+        } else {
+          newState = state
+        }
+        break
+
+      case 'REMOVE':
         newState = {
           ...state,
+          errors: { ...state.errors, [action.payload.field]: undefined },
+          values: { ...currentValues, [action.payload.field]: undefined },
           validations: {
             ...state.validations,
-            [action.payload.field]: Array.isArray(action.payload.validation)
-              ? action.payload.validation
-              : [action.payload.validation],
+            [action.payload.field]: undefined,
           },
         }
-      } else {
+        break
+      case 'CLEAR':
+        newState = {
+          ...state,
+          errors: {},
+          dirty: {},
+          values: { ...action.payload.initialValues },
+        }
+        break
+      case 'SET_DIRTY':
+        newState = {
+          ...state,
+          dirty: { ...state.dirty, [action.payload.field]: true },
+        }
+        break
+
+      case 'SET_ERROR':
+        newState = {
+          ...state,
+          forcedErrors: {
+            ...state.forcedErrors,
+            [action.payload.field]: action.payload.message,
+          },
+        }
+
+        break
+
+      default:
         newState = state
-      }
-      break
+        break
+    }
 
-    case 'REMOVE':
-      newState = {
-        ...state,
-        errors: { ...state.errors, [action.payload.field]: undefined },
-        values: { ...state.values, [action.payload.field]: undefined },
-        validations: {
-          ...state.validations,
-          [action.payload.field]: undefined,
-        },
-      }
-      break
-    case 'CLEAR':
-      newState = {
-        ...state,
-        errors: {},
-        dirty: {},
-        values: { ...action.payload.initialValue },
-      }
-      break
-    case 'SET_DIRTY':
-      newState = {
-        ...state,
-        dirty: { ...state.dirty, [action.payload.field]: true },
-      }
-      break
+    const { errors, valid } = validate(newState)
 
-    case 'SET_ERROR':
-      newState = {
-        ...state,
-        forcedErrors: {
-          ...state.forcedErrors,
-          [action.payload.field]: action.payload.message,
-        },
-      }
+    newState.errors = errors
+    newState.valid = valid
 
-      break
+    action.onChange && action.onChange({ ...newState, action: action.type })
 
-    default:
-      newState = state
-      break
+    return newState
   }
 
-  const { errors, valid } = validate(newState)
-
-  newState.errors = errors
-  newState.valid = valid
-
-  action.onChange && action.onChange({ ...newState, action: action.type })
-
-  return newState
-}
-
-const useFormReducer = (
-  initialValue: ObjectRecord = {},
-  onChange?: (payload: FormChangePayload) => any,
-) => {
+function useFormReducer<T extends FormValues>(
+  initialValues?: T,
+  onChange?: (payload: FormChangePayload<T>) => any,
+) {
+  const reducer = useCallback(createReducer<T>(), [])
   const [state, action] = useReducer(reducer, {
     validations: {},
     errors: {},
     dirty: {},
     forcedErrors: {},
-    values: initialValue,
+    values: initialValues || ({} as T),
     valid: true,
   })
 
-  const getValue = (field: string) => {
-    return state.values[field] || ''
+  const getValue = (field: keyof T) => {
+    return state.values?.[field]
   }
 
-  const updateValue = (field: string, value: string) => {
+  const updateValue = (field: string, value: FieldValue) => {
     action({
       type: 'UPDATE',
       payload: {
@@ -311,7 +334,7 @@ const useFormReducer = (
   const clear = () => {
     action({
       type: 'CLEAR',
-      payload: { initialValue },
+      payload: { initialValues },
       onChange,
     })
   }
@@ -354,7 +377,7 @@ const useFormReducer = (
   }
 }
 
-export const useForm = () => {
+export function useForm() {
   return useContext(FormContext)
 }
 
@@ -368,7 +391,7 @@ export type FieldProps = {
   validation?: Validation
   required?: boolean
   type?: string
-  onBlur?: (event: ObjectRecord) => any
+  onBlur?: (event: GenericObject) => any
   defaultErrorMessages?: DefaultErrorMessages
 }
 
@@ -384,7 +407,7 @@ export const EMAIL_REGEX =
 
 export const EMAIL_VALIDATION =
   (errorMessage: string = 'Invalid email.') =>
-  (value: string): string => {
+  (value: FieldValue): string => {
     if (!value) {
       return ''
     }
@@ -396,18 +419,18 @@ export const EMAIL_VALIDATION =
     return errorMessage
   }
 
-export type FieldPayload = {
-  fieldValue?: string
-  update: (value: string) => any
+export type FieldPayload<T> = {
+  fieldValue?: T
+  update: (value: FieldValue) => any
   showError: boolean
   errorMessage?: string
-  onBlur: (e?: ObjectRecord) => any
+  onBlur: (e?: GenericObject) => any
   submit: () => any
   submitting: boolean
   valid: boolean
 }
 
-export const useField = (props: FieldProps) => {
+export function useField<T extends FieldValue>(props: FieldProps) {
   const { name } = props
   const {
     errors,
@@ -470,15 +493,15 @@ export const useField = (props: FieldProps) => {
   const errorMessage = errors[name]
   const showError = !!errorMessage && (submitted || dirty)
 
-  const onBlur = (e: ObjectRecord) => {
+  const onBlur = (e: GenericObject) => {
     setDirty(name)
     props.onBlur && props.onBlur(e)
   }
 
-  const fieldValue = getValue(name)
-  const update = (newvalue: string) => updateValue(name, newvalue)
+  const fieldValue = getValue(name) as T
+  const update = (newvalue: T) => updateValue(name, newvalue)
 
-  const payload: FieldPayload = {
+  const payload: FieldPayload<T> = {
     fieldValue,
     update,
     showError,
@@ -491,17 +514,18 @@ export const useField = (props: FieldProps) => {
   return payload
 }
 
-type Children = (JSX.Element | null)[] | (JSX.Element | null)
+type Child = JSX.Element | string | null | undefined
+type Children = Child[] | Child
 
-export type FormProps = {
-  onSubmit?: (payload: FormSubmitPayload, mode?: string) => any
-  onChange?: (payload: FormChangePayload) => any
-  initialValues?: ObjectRecord
+export type FormProps<T extends FormValues> = {
+  onSubmit?: (payload: FormSubmitPayload<T>, mode?: string) => any
+  onChange?: (payload: FormChangePayload<T>) => any
+  initialValues?: T
   children: Children | ((payload: FormContextType) => Children)
 }
 
-const Form = (props: FormProps) => {
-  const reducer = useFormReducer(props.initialValues, props.onChange)
+export function Form<T extends FormValues>(props: FormProps<T>) {
+  const reducer = useFormReducer<T>(props.initialValues, props.onChange)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
@@ -509,28 +533,33 @@ const Form = (props: FormProps) => {
     setSubmitted(true)
     if (props.onSubmit) {
       setSubmitting(true)
-      props.onSubmit &&
-        props.onSubmit(
-          {
-            valid: reducer.valid,
-            values: reducer.values,
-            errors: reducer.errors,
-            onFinish: (clear?: boolean) => {
-              setSubmitting(false)
+      props.onSubmit?.(
+        {
+          valid: reducer.valid,
+          values: reducer.values,
+          errors: reducer.errors,
+          onFinish: (clear?: boolean) => {
+            setSubmitting(false)
 
-              if (clear) {
-                reducer.clear()
-                setSubmitted(false)
-              }
-            },
-            setError: reducer.setError,
+            if (clear) {
+              reducer.clear()
+              setSubmitted(false)
+            }
           },
-          mode,
-        )
+          setError: reducer.setError,
+        },
+        mode,
+      )
     }
   }
 
-  const value = { ...reducer, submitted, submitting, submit: onSubmit }
+  const value = {
+    ...reducer,
+    submitted,
+    submitting,
+    submit: onSubmit,
+    inForm: true,
+  }
 
   return (
     <FormContext.Provider value={value}>
@@ -539,6 +568,10 @@ const Form = (props: FormProps) => {
         : props.children}
     </FormContext.Provider>
   )
+}
+
+export function GenericForm(props: FormProps<GenericFormType>) {
+  return <Form<GenericFormType> {...props} />
 }
 
 // Helper rescource to turn a component into a Field
@@ -551,12 +584,12 @@ type Subtract<T extends T1, T1 extends object> = Pick<
   SetComplement<keyof T, keyof T1>
 >
 
-export const turnIntoField = <ComponentProps extends FieldPayload>(
+export function turnIntoField<ComponentProps extends FieldPayload<string>>(
   Component: React.ComponentType<ComponentProps>,
   defaultErrorMessages?: DefaultErrorMessages,
-): React.FC<Subtract<ComponentProps, FieldPayload> & FieldProps> => {
+): React.FC<Subtract<ComponentProps, FieldPayload<string>> & FieldProps> {
   return (props: FieldProps & ComponentProps) => {
-    const fieldProps: FieldPayload = useField({
+    const fieldProps: FieldPayload<string> = useField({
       ...props,
       defaultErrorMessages,
     })

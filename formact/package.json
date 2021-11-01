@@ -25,7 +25,7 @@
   "peerDependencies": {
     "react": "^17.0.19"
   },
-  "dependencies": {
+  "devDependencies": {
     "@types/react": "^17.0.19",
     "typescript": "^4.4.2"
   }
