@@ -7,11 +7,11 @@ import React, {
   useCallback,
 } from 'react'
 
-type GenericObject = Record<string, any>
+export type GenericObject = Record<string, any>
 
 export type GenericFormType = GenericObject
 
-type FieldValue =
+export type FieldValue =
   | string
   | boolean
   | number
@@ -20,9 +20,9 @@ type FieldValue =
   | null
   | undefined
 
-type FormValues = Record<string, FieldValue>
+export type FormValues = Record<string, FieldValue>
 
-type ErrorValues = Record<string, string | null | undefined>
+export type ErrorValues = Record<string, string | null | undefined>
 
 export type FormSubmitPayload<T extends FormValues> = {
   valid: boolean
@@ -39,7 +39,7 @@ export type FormChangePayload<T extends FormValues> = {
   action?: string
 }
 
-type PayloadField = {
+export type PayloadField = {
   field: string
   value?: FieldValue
 }
@@ -88,7 +88,7 @@ const FormContext = createContext<FormContextType>({
   setError: () => {},
 })
 
-type State<T extends FormValues> = {
+export type State<T extends FormValues> = {
   errors: ErrorValues
   values: T
   validations: Record<string, (ValidationFunction | null)[]>
@@ -97,13 +97,13 @@ type State<T extends FormValues> = {
   valid: boolean
 }
 
-type UpdateAction<T extends FormValues> = {
+export type UpdateAction<T extends FormValues> = {
   type: 'UPDATE'
   payload: PayloadField | Array<PayloadField>
   onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type AddFieldAction<T extends FormValues> = {
+export type AddFieldAction<T extends FormValues> = {
   type: 'ADD'
   payload: {
     field: string
@@ -112,7 +112,7 @@ type AddFieldAction<T extends FormValues> = {
   onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type RemoveFieldAction<T extends FormValues> = {
+export type RemoveFieldAction<T extends FormValues> = {
   type: 'REMOVE'
   payload: {
     field: string
@@ -120,7 +120,7 @@ type RemoveFieldAction<T extends FormValues> = {
   onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type SetDirty<T extends FormValues> = {
+export type SetDirty<T extends FormValues> = {
   type: 'SET_DIRTY'
   payload: {
     field: string
@@ -128,7 +128,7 @@ type SetDirty<T extends FormValues> = {
   onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type SetError<T extends FormValues> = {
+export type SetError<T extends FormValues> = {
   type: 'SET_ERROR'
   payload: {
     field: string
@@ -137,7 +137,7 @@ type SetError<T extends FormValues> = {
   onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type ClearAction<T extends FormValues> = {
+export type ClearAction<T extends FormValues> = {
   type: 'CLEAR'
   payload: {
     initialValues: T
@@ -145,7 +145,7 @@ type ClearAction<T extends FormValues> = {
   onChange?: (payload: FormChangePayload<T>) => any
 }
 
-type Action<T extends FormValues> =
+export type Action<T extends FormValues> =
   | UpdateAction<T>
   | AddFieldAction<T>
   | RemoveFieldAction<T>
@@ -514,8 +514,8 @@ export function useField<T extends FieldValue>(props: FieldProps) {
   return payload
 }
 
-type Child = JSX.Element | string | null | undefined
-type Children = Child[] | Child
+export type Child = JSX.Element | string | null | undefined
+export type Children = Child[] | Child
 
 export type FormProps<T extends FormValues> = {
   onSubmit?: (payload: FormSubmitPayload<T>, mode?: string) => any
@@ -573,29 +573,4 @@ export function Form<T extends FormValues>(props: FormProps<T>) {
 export function GenericForm(props: FormProps<GenericFormType>) {
   return <Form<GenericFormType> {...props} />
 }
-
-// Helper rescource to turn a component into a Field
-type SetDifference<A, B> = A extends B ? never : A
-
-type SetComplement<A, A1 extends A> = SetDifference<A, A1>
-
-type Subtract<T extends T1, T1 extends object> = Pick<
-  T,
-  SetComplement<keyof T, keyof T1>
->
-
-export function turnIntoField<ComponentProps extends FieldPayload<string>>(
-  Component: React.ComponentType<ComponentProps>,
-  defaultErrorMessages?: DefaultErrorMessages,
-): React.FC<Subtract<ComponentProps, FieldPayload<string>> & FieldProps> {
-  return (props: FieldProps & ComponentProps) => {
-    const fieldProps: FieldPayload<string> = useField({
-      ...props,
-      defaultErrorMessages,
-    })
-
-    return <Component {...(props as ComponentProps)} {...fieldProps} />
-  }
-}
-
 export default Form
