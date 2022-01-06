@@ -19,6 +19,7 @@ function App() {
   return (
     <div className="App">
       <Form<MyForm>
+        initialState={{ valid: false }}
         onSubmit={(payload) => {
           console.log(payload.values.name, payload.values.notHere)
           setOutput(JSON.stringify(payload, null, '<br />'))

@@ -49,6 +49,7 @@ export declare type State<T extends FormValues> = {
     forcedErrors: ErrorValues;
     valid: boolean;
 };
+export declare type InitialState<T extends FormValues> = Partial<Pick<State<T>, 'values' | 'valid'>>;
 export declare type UpdateAction<T extends FormValues> = {
     type: 'UPDATE';
     payload: PayloadField | Array<PayloadField>;
@@ -123,6 +124,7 @@ export declare type Children = Child[] | Child;
 export declare type FormProps<T extends FormValues> = {
     onSubmit?: (payload: FormSubmitPayload<T>, mode?: string) => any;
     onChange?: (payload: FormChangePayload<T>) => any;
+    initialState?: InitialState<T>;
     initialValues?: T;
     children: Children | ((payload: FormContextType) => Children);
 };
