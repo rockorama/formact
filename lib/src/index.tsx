@@ -97,6 +97,10 @@ export type State<T extends FormValues> = {
   valid: boolean
 }
 
+export type InitialState<T extends FormValues> = Partial<
+  Pick<State<T>, 'values' | 'valid'>
+>
+
 export type UpdateAction<T extends FormValues> = {
   type: 'UPDATE'
   payload: PayloadField | Array<PayloadField>
@@ -274,7 +278,8 @@ const createReducer =
   }
 
 function useFormReducer<T extends FormValues>(
-  initialValues?: T,
+  initialState: InitialState<T> = {},
+  initialValues: T = {} as T,
   onChange?: (payload: FormChangePayload<T>) => any,
 ) {
   const reducer = useCallback(createReducer<T>(), [])
@@ -283,8 +288,9 @@ function useFormReducer<T extends FormValues>(
     errors: {},
     dirty: {},
     forcedErrors: {},
-    values: initialValues || ({} as T),
+    values: initialValues,
     valid: true,
+    ...initialState,
   })
 
   const getValue = (field: keyof T) => {
@@ -520,12 +526,17 @@ export type Children = Child[] | Child
 export type FormProps<T extends FormValues> = {
   onSubmit?: (payload: FormSubmitPayload<T>, mode?: string) => any
   onChange?: (payload: FormChangePayload<T>) => any
+  initialState?: InitialState<T>
   initialValues?: T
   children: Children | ((payload: FormContextType) => Children)
 }
 
 export function Form<T extends FormValues>(props: FormProps<T>) {
-  const reducer = useFormReducer<T>(props.initialValues, props.onChange)
+  const reducer = useFormReducer<T>(
+    props.initialState,
+    props.initialValues,
+    props.onChange,
+  )
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
