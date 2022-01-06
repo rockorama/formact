@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.turnIntoField = exports.GenericForm = exports.Form = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
+exports.GenericForm = exports.Form = exports.useField = exports.EMAIL_VALIDATION = exports.EMAIL_REGEX = exports.useForm = void 0;
 const react_1 = __importStar(require("react"));
 const FormContext = (0, react_1.createContext)({
     errors: {},
@@ -307,11 +307,4 @@ function GenericForm(props) {
     return react_1.default.createElement(Form, Object.assign({}, props));
 }
 exports.GenericForm = GenericForm;
-function turnIntoField(Component, defaultErrorMessages) {
-    return (props) => {
-        const fieldProps = useField(Object.assign(Object.assign({}, props), { defaultErrorMessages }));
-        return react_1.default.createElement(Component, Object.assign({}, props, fieldProps));
-    };
-}
-exports.turnIntoField = turnIntoField;
 exports.default = Form;

@@ -1,9 +1,9 @@
-import React from 'react';
-declare type GenericObject = Record<string, any>;
+/// <reference types="react" />
+export declare type GenericObject = Record<string, any>;
 export declare type GenericFormType = GenericObject;
-declare type FieldValue = string | boolean | number | GenericObject | Date | null | undefined;
-declare type FormValues = Record<string, FieldValue>;
-declare type ErrorValues = Record<string, string | null | undefined>;
+export declare type FieldValue = string | boolean | number | GenericObject | Date | null | undefined;
+export declare type FormValues = Record<string, FieldValue>;
+export declare type ErrorValues = Record<string, string | null | undefined>;
 export declare type FormSubmitPayload<T extends FormValues> = {
     valid: boolean;
     values: T;
@@ -17,7 +17,7 @@ export declare type FormChangePayload<T extends FormValues> = {
     errors: ErrorValues;
     action?: string;
 };
-declare type PayloadField = {
+export declare type PayloadField = {
     field: string;
     value?: FieldValue;
 };
@@ -41,6 +41,57 @@ export declare type FormContextType = {
     clear: () => any;
     setError: (field: string, message: string) => any;
 };
+export declare type State<T extends FormValues> = {
+    errors: ErrorValues;
+    values: T;
+    validations: Record<string, (ValidationFunction | null)[]>;
+    dirty: Record<string, boolean | undefined>;
+    forcedErrors: ErrorValues;
+    valid: boolean;
+};
+export declare type UpdateAction<T extends FormValues> = {
+    type: 'UPDATE';
+    payload: PayloadField | Array<PayloadField>;
+    onChange?: (payload: FormChangePayload<T>) => any;
+};
+export declare type AddFieldAction<T extends FormValues> = {
+    type: 'ADD';
+    payload: {
+        field: string;
+        validation?: Validation;
+    };
+    onChange?: (payload: FormChangePayload<T>) => any;
+};
+export declare type RemoveFieldAction<T extends FormValues> = {
+    type: 'REMOVE';
+    payload: {
+        field: string;
+    };
+    onChange?: (payload: FormChangePayload<T>) => any;
+};
+export declare type SetDirty<T extends FormValues> = {
+    type: 'SET_DIRTY';
+    payload: {
+        field: string;
+    };
+    onChange?: (payload: FormChangePayload<T>) => any;
+};
+export declare type SetError<T extends FormValues> = {
+    type: 'SET_ERROR';
+    payload: {
+        field: string;
+        message?: string;
+    };
+    onChange?: (payload: FormChangePayload<T>) => any;
+};
+export declare type ClearAction<T extends FormValues> = {
+    type: 'CLEAR';
+    payload: {
+        initialValues: T;
+    };
+    onChange?: (payload: FormChangePayload<T>) => any;
+};
+export declare type Action<T extends FormValues> = UpdateAction<T> | AddFieldAction<T> | RemoveFieldAction<T> | ClearAction<T> | SetDirty<T> | SetError<T>;
 export declare function useForm(): FormContextType;
 export declare type DefaultErrorMessages = {
     email?: string;
@@ -67,8 +118,8 @@ export declare type FieldPayload<T> = {
     valid: boolean;
 };
 export declare function useField<T extends FieldValue>(props: FieldProps): FieldPayload<T>;
-declare type Child = JSX.Element | string | null | undefined;
-declare type Children = Child[] | Child;
+export declare type Child = JSX.Element | string | null | undefined;
+export declare type Children = Child[] | Child;
 export declare type FormProps<T extends FormValues> = {
     onSubmit?: (payload: FormSubmitPayload<T>, mode?: string) => any;
     onChange?: (payload: FormChangePayload<T>) => any;
@@ -77,8 +128,4 @@ export declare type FormProps<T extends FormValues> = {
 };
 export declare function Form<T extends FormValues>(props: FormProps<T>): JSX.Element;
 export declare function GenericForm(props: FormProps<GenericFormType>): JSX.Element;
-declare type SetDifference<A, B> = A extends B ? never : A;
-declare type SetComplement<A, A1 extends A> = SetDifference<A, A1>;
-declare type Subtract<T extends T1, T1 extends object> = Pick<T, SetComplement<keyof T, keyof T1>>;
-export declare function turnIntoField<ComponentProps extends FieldPayload<string>>(Component: React.ComponentType<ComponentProps>, defaultErrorMessages?: DefaultErrorMessages): React.FC<Subtract<ComponentProps, FieldPayload<string>> & FieldProps>;
 export default Form;
