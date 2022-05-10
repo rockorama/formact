@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "module": "commonjs",
-    "target": "es2015",
-    "declaration": true,
+    "allowSyntheticDefaultImports": true,
     "outDir": "./dist",
-    "esModuleInterop": true
+    "mapRoot": "./dist",
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true,
+    "sourceRoot": "./source",
+    "removeComments": false,
+    "types": []
   },
+  "exclude": ["node_modules", "test"],
   "include": ["src/**/*"]
 }
