@@ -44,7 +44,7 @@ function useValidation(
 
   const { lastUpdate } = form
 
-  const lastDependantUpdated = useMemo(() => {
+  const lastDependencieUpdated = useMemo(() => {
     if (dependsOn?.indexOf(lastUpdate?.fieldName || '') || -1 > -1) {
       return Date.now()
     }
@@ -60,7 +60,7 @@ function useValidation(
       })
     }
     return values
-  }, [lastDependantUpdated])
+  }, [lastDependencieUpdated])
 
   const errors = useMemo(() => {
     let error = ''
@@ -92,7 +92,7 @@ export default function useField<T extends FieldValue>(props: FieldProps) {
     },
     setError,
     clear: () => {
-      setValue(undefined)
+      setValue(form.initialValues[props.name] as T)
       setShowError(false)
     },
     name: props.name,
