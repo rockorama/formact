@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { FormChangePayload, FormContextType, FormSubmitPayload, FormValues, InitialState } from './types';
 export declare type Child = JSX.Element | string | null | undefined;
 export declare type Children = Child[] | Child;

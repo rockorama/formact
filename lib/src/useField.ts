@@ -45,7 +45,7 @@ function useValidation(
   const { lastUpdate } = form
 
   const lastDependantUpdated = useMemo(() => {
-    if (dependsOn?.indexOf(lastUpdate.fieldName || '') > -1) {
+    if (dependsOn?.indexOf(lastUpdate?.fieldName || '') || -1 > -1) {
       return Date.now()
     }
 

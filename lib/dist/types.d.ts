@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare type GenericObject = Record<string, any>;
 export declare type FieldValue = string | boolean | number | GenericObject | Date | null | undefined;
 export declare type FormValues = Record<string, FieldValue>;
