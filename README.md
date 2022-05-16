@@ -13,26 +13,84 @@ npm install --save formact
 ## Usage
 
 #### Creating fields
-As formact is design agnostic, you'll need to create your own fields. You can it by using the hook `useField` in a function component:
+As formact is design agnostic, you'll need to create your own fields. You can it by using the hook `useField` in a function component.
+
+##### This how a TextField would look like:
 
 ```typescript
 import { useField, FieldProps } from 'formact'
 
-export default function TextField(props: FieldProps) {
-  const field = useField(props)
+export default function TextField(props: FieldProps & { label: string }) {
+  const field = useField<string>(props)
 
-  return <input value={field.fieldValue} onChange={(e) => field.update(e.target.value) />
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        margin: '5px 10px',
+      }}>
+      <div>
+        <label htmlFor={props.name}>{props.label}</label>
+      </div>
+      <input
+        // @ts-ignore
+        data-testid={`field-${props.name}`}
+        name={props.name}
+        id={props.name}
+        type={props.type}
+        onBlur={(e) => {
+          // call field.onBlur to make sure the field is dirty
+          field.onBlur(e)
+        }}
+        // use field value
+        value={field.fieldValue || ''}
+        // update the field value
+        onChange={(e) => field.update(e.target.value)}
+        onKeyDown={(e) => {
+          // Submit the form when pressing enter
+          if (e.key === 'Enter') {
+            field.submit()
+          }
+        }}
+      />
+      {field.showError ? (
+        <div data-testid={`field-error-${props.name}`} style={{ color: 'red' }}>
+          {field.errorMessage}
+        </div>
+      ) : null}
+    </div>
+  )
+}
+```
+
+##### A submit button:
+
+```typescript
+export default function SubmitButton() {
+  const form = useForm()
+  return (
+    <button
+      data-testid="submit-button"
+      type="submit"
+      disabled={!form.valid}
+      onClick={form.submit}>
+      {form.submitting ? 'Submitting...' : 'Submit'}
+    </button>
+  )
 }
 ```
 
 #### Using the fields
-These fields are useless if not wrapped in a `Form` component.
+These fields become really powerful when wrapped in a Form component.
 
 ```typescript
 import Form from "formact" 
 
 <Form onChange=(console.log) onSubmit={console.log}>
   <TextField name="country" />
+  <SubmitButton />
 </Form>
 ```
 
