@@ -1,6 +1,4 @@
-# formact [![codecov](https://codecov.io/gh/diogoperillo/formact/branch/main/graph/badge.svg?token=MIYML221SA)](https://codecov.io/gh/diogoperillo/formact)
-
-# Formact
+# Formact [![codecov](https://codecov.io/gh/diogoperillo/formact/branch/main/graph/badge.svg?token=MIYML221SA)](https://codecov.io/gh/diogoperillo/formact)
 
 A zero dependency and design agnostic **Form** library for React.
 
