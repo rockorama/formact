@@ -1,7 +1,21 @@
 {
   "name": "formact",
-  "version": "4.0.3",
-  "description": "Context for React form components with validation",
+  "version": "4.0.4",
+  "description": "A zero dependency and design agnostic Form library for React.",
+  "keywords": [
+    "form",
+    "forms",
+    "react",
+    "react-dom",
+    "react-native",
+    "hooks",
+    "rect hooks",
+    "validation",
+    "field validation",
+    "form validation",
+    "context",
+    "textfield"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest --coverage"
