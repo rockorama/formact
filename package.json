@@ -1,6 +1,6 @@
 {
   "name": "formact",
-  "version": "4.0.2-alpha",
+  "version": "4.0.0",
   "description": "Context for React form components with validation",
   "scripts": {
     "build": "tsc",
