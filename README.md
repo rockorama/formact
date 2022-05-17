@@ -1,4 +1,4 @@
-<p align="center"><img src="./formact-logo.png" width="300px" /></p>
+<p align="center"><img src="./formact-logo.png" width="400px" /></p>
 
 # Formact [![codecov](https://codecov.io/gh/diogoperillo/formact/branch/main/graph/badge.svg?token=MIYML221SA)](https://codecov.io/gh/diogoperillo/formact)
 

@@ -4,8 +4,7 @@
   "description": "Context for React form components with validation",
   "scripts": {
     "build": "tsc",
-    "test": "jest --coverage",
-    "ship": "npm run build && npm version patch && npm publish --access public && git push"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
