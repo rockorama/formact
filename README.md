@@ -1,3 +1,5 @@
+<p align="center"><img src="./formact-logo.png" width="300px" /></p>
+
 # Formact [![codecov](https://codecov.io/gh/diogoperillo/formact/branch/main/graph/badge.svg?token=MIYML221SA)](https://codecov.io/gh/diogoperillo/formact)
 
 A zero dependency and design agnostic **Form** library for React.
@@ -13,6 +15,7 @@ npm install --save formact
 ## Usage
 
 #### Creating fields
+
 As formact is design agnostic, you'll need to create your own fields. You can it by using the hook `useField` in a function component.
 
 ##### This how a TextField would look like:
@@ -83,10 +86,11 @@ export default function SubmitButton() {
 ```
 
 #### Using the fields
+
 These fields become really powerful when wrapped in a Form component.
 
 ```typescript
-import Form from "formact" 
+import Form from "formact"
 
 <Form onChange=(console.log) onSubmit={console.log}>
   <TextField name="country" />
@@ -95,9 +99,11 @@ import Form from "formact"
 ```
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
