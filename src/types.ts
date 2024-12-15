@@ -4,6 +4,7 @@ export type FieldValue =
   | string
   | boolean
   | number
+  | bigint
   | GenericObject
   | Date
   | null
